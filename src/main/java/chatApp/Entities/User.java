@@ -153,7 +153,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastname, nickName, email, password, profilePhoto, dateOfBirth,
+        return Objects.hash(id, firstName, lastname, nickName, email, password ,profilePhoto , dateOfBirth,
                 description, userType, userStatus, privacyStatus, prefix);
     }
 
