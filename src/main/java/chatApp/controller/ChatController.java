@@ -2,16 +2,13 @@ package chatApp.controller;
 
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.HelloMessage;
-import chatApp.Entities.User;
 import chatApp.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.sql.SQLDataException;
 
 @RestController
@@ -36,11 +33,6 @@ public class ChatController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String createMessage(@RequestBody ChatMessage chatMessage){
-        try {
-            return chatService.addMessage(chatMessage).toString();
-        } catch (SQLDataException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Email already exists", e);
-        }
+        return chatService.addMessage(chatMessage).toString();
     }
 }

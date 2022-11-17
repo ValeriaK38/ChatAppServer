@@ -14,11 +14,12 @@ public class ChatService {
         this.messageRepository = messageRepository;
     }
 
-
-    public ChatMessage addMessage(ChatMessage chatMessage) throws SQLDataException {
-        if(messageRepository.findById(chatMessage.getId())!=null){
-            throw new SQLDataException(String.format("123123"));
-        }
+    /**
+     * Adds a message to the database - content paired with sender
+     * @param chatMessage - the message's data
+     * @return a saved message with it's generated id
+     */
+    public ChatMessage addMessage(ChatMessage chatMessage){
         return messageRepository.save(chatMessage);
     }
 }

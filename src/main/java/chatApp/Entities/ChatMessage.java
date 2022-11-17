@@ -5,14 +5,13 @@ import javax.persistence.*;
 @Entity
 @Table(name = "message")
 public class ChatMessage {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="message_id")
+    @Column(name = "message_id")
     private int id;
-    @Column(name="message_sender")
+    @Column(name = "message_sender")
     private String sender;
-    @Column(name="message_content")
+    @Column(name = "message_content")
     private String content;
 
     public ChatMessage() {
@@ -25,10 +24,6 @@ public class ChatMessage {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getSender() {
