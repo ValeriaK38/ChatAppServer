@@ -47,6 +47,9 @@ public class User {
     @Column(name="user_prefix")
     private Prefix prefix;
 
+    public User() {
+    }
+
     public int getId() {
         return id;
     }
