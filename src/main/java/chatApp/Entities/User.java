@@ -18,20 +18,33 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="user_Id")
     private int id;
+    @Column(name="first_name")
     private String firstName;
+    @Column(name="last_name")
     private String lastname;
+    @Column(name="user_nickname")
     private String nickName;
-    @Column(unique = true)
+    @Column(name = "user_email", unique = true)
     @NotNull
     private String email;
+    @Column(name="user_password")
     private String password;
-    private Image profilePhoto;
+    @Lob
+    @Column(name="profile_photo", columnDefinition="mediumblob")
+    private byte[] profilePhoto;
+    @Column(name="date_of_birth")
     private LocalDate dateOfBirth;
+    @Column(name="user_description")
     private String description;
+    @Column(name="user_type")
     private UserType userType;
+    @Column(name="user_status")
     private UserStatus userStatus;
+    @Column(name="user_privacy")
     private PrivacyStatus privacyStatus;
+    @Column(name="user_prefix")
     private Prefix prefix;
 
     public int getId() {
@@ -82,11 +95,11 @@ public class User {
         this.password = password;
     }
 
-    public Image getProfilePhoto() {
+    public byte[] getProfilePhoto() {
         return profilePhoto;
     }
 
-    public void setProfilePhoto(Image profilePhoto) {
+    public void setProfilePhoto(byte[] profilePhoto) {
         this.profilePhoto = profilePhoto;
     }
 
@@ -184,7 +197,7 @@ public class User {
         private String description;
         private String firstName;
         private String lastname;
-        private Image profilePhoto;
+        private byte[] profilePhoto;
         private LocalDate dateOfBirth;
         private UserType userType = UserType.REGISTERED;
         private UserStatus userStatus = UserStatus.OFFLINE;
@@ -212,7 +225,7 @@ public class User {
             return this;
         }
 
-        public UserBuilder profilePhoto(Image profilePhoto) {
+        public UserBuilder profilePhoto(byte[] profilePhoto) {
             this.profilePhoto = profilePhoto;
             return this;
         }
