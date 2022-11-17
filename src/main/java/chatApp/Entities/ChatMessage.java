@@ -1,8 +1,5 @@
 package chatApp.Entities;
 
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-
 public class ChatMessage {
     private String sender;
     private String content;
@@ -15,11 +12,7 @@ public class ChatMessage {
         this.content = content;
     }
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/mainChat")
-    public ChatMessage greeting(HelloMessage message) throws Exception {
-        return new ChatMessage("SYSTEM", message.getName() + "joined the chat");
-    }
+
 
     public String getSender() {
         return sender;
