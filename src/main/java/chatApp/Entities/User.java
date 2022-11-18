@@ -46,6 +46,9 @@ public class User {
     private PrivacyStatus privacyStatus;
     @Column(name = "user_prefix")
     private Prefix prefix;
+    @Column(name = "user_prefix")
+    private boolean isMuted;
+
 
     public User() {
     }
@@ -150,6 +153,28 @@ public class User {
         this.prefix = prefix;
     }
 
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(boolean muted) {
+        isMuted = muted;
+    }
+
+    public void adminMuteUser(User user){
+        if(this.getUserType() == UserType.ADMIN && user.getUserType() != UserType.ADMIN
+        && user.isMuted() == false){
+            user.setMuted(true);
+        }
+    }
+
+    public void adminUnmuteUser(User user){
+        if(this.getUserType() == UserType.ADMIN && user.getUserType() != UserType.ADMIN
+                && user.isMuted() == true){
+            user.setMuted(false);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -202,6 +227,7 @@ public class User {
         private UserStatus userStatus = UserStatus.OFFLINE;
         private PrivacyStatus privacyStatus = PrivacyStatus.PUBLIC;
         private Prefix prefix;
+        private boolean isMuted = false;
 
         public UserBuilder(String email, String password, String nickName) {
             this.email = email;
@@ -272,5 +298,6 @@ public class User {
         this.userType = builder.userType;
         this.privacyStatus = builder.privacyStatus;
         this.profilePhoto = builder.profilePhoto;
+        this.isMuted = builder.isMuted;
     }
 }
