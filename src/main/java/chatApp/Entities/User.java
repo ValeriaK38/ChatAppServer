@@ -5,10 +5,7 @@ import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import com.sun.istack.NotNull;
-import net.bytebuddy.asm.Advice;
-
 import javax.persistence.*;
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -173,6 +170,10 @@ public class User {
                 && user.isMuted() == true){
             user.setMuted(false);
         }
+    }
+
+    public void switchUserStatus(UserStatus userStatus){
+        this.userStatus = userStatus;
     }
 
     @Override
