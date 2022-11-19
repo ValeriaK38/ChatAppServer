@@ -43,7 +43,7 @@ public class User {
     private PrivacyStatus privacyStatus;
     @Column(name = "user_prefix")
     private Prefix prefix;
-    @Column(name = "user_prefix")
+    @Column(name = "user_is_Muted")
     private boolean isMuted;
 
 
