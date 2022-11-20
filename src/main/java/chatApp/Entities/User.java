@@ -43,8 +43,10 @@ public class User {
     private PrivacyStatus privacyStatus;
     @Column(name = "user_prefix")
     private Prefix prefix;
-    @Column(name = "user_is_Muted")
+    @Column(name = "user_is_muted")
     private boolean isMuted;
+    @Column(name = "user_token")
+    private String token;
 
 
     public User() {
@@ -158,6 +160,14 @@ public class User {
         isMuted = muted;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public void adminMuteUser(User user){
         if(this.getUserType() == UserType.ADMIN && user.getUserType() != UserType.ADMIN
         && user.isMuted() == false){
@@ -173,7 +183,9 @@ public class User {
     }
 
     public void switchUserStatus(UserStatus userStatus){
-        this.userStatus = userStatus;
+        if(!userStatus.equals(UserStatus.OFFLINE) ){
+            this.userStatus = userStatus;
+        }
     }
 
     @Override
@@ -229,6 +241,7 @@ public class User {
         private PrivacyStatus privacyStatus = PrivacyStatus.PUBLIC;
         private Prefix prefix;
         private boolean isMuted = false;
+        private String token;
 
         public UserBuilder(String email, String password, String nickName) {
             this.email = email;
@@ -281,6 +294,11 @@ public class User {
             return this;
         }
 
+        public UserBuilder token(String token){
+            this.token = token;
+            return this;
+        }
+
         public User build() {
             return new User(this);
         }
@@ -300,5 +318,6 @@ public class User {
         this.privacyStatus = builder.privacyStatus;
         this.profilePhoto = builder.profilePhoto;
         this.isMuted = builder.isMuted;
+        this.token = builder.token;
     }
 }
