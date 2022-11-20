@@ -1,4 +1,3 @@
 .idea/
 target/
-.DS_Store/
-application.properties
+.DS_Store
