@@ -1,5 +1,6 @@
 package chatApp.service;
 
+import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class AuthServiceTemp {
         HashMap<String, String> res = new HashMap<>();
         res.put("" + id, token);
 
+        tempUser.setToken(token);
+        tempUser.switchUserStatus(UserStatus.ONLINE);
+        userRepository.saveAndFlush(tempUser);
         return res;
     }
 
