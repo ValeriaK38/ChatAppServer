@@ -2,15 +2,12 @@ package chatApp.service;
 
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLDataException;
 
 @Service
 public class UserService {
-
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -27,6 +24,13 @@ public class UserService {
     public User addUser(User user) throws SQLDataException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new SQLDataException(String.format("Email %s exists in users table", user.getEmail()));
+        }
+        return userRepository.save(user);
+    }
+
+    public User addUGuest(User user) throws SQLDataException {
+        if (userRepository.findByNickName(user.getNickName()) != null) {
+            throw new SQLDataException(String.format("Nickname %s exists in users table", user.getNickName()));
         }
         return userRepository.save(user);
     }
