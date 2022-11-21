@@ -10,4 +10,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
         User saveAndFlush(User user);
 
         User findByNickName(String nickName);
+
 }
