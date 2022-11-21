@@ -249,6 +249,12 @@ public class User {
             this.nickName = nickName;
         }
 
+
+        public  UserBuilder(String nickName) {
+            this.nickName = nickName;
+            this.prefix = Prefix.GUEST;
+        }
+
         public UserBuilder description(String description) {
             this.description = description;
             return this;
