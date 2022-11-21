@@ -2,6 +2,7 @@ package chatApp.controller;
 
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.HelloMessage;
+import chatApp.Entities.RequestMessage;
 import chatApp.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,8 @@ public class ChatController {
         return new ChatMessage("SYSTEM", message.getName() + "joined the chat");
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public String createMessage(@RequestBody ChatMessage chatMessage){
-        return chatService.addMessage(chatMessage).toString();
+    @RequestMapping(value = "create", method = RequestMethod.POST)
+    public String createMessage(@RequestBody RequestMessage requestMessage){
+        return chatService.addMessage(requestMessage).toString();
     }
 }
