@@ -1,25 +1,33 @@
 package chatApp.service;
 
 import chatApp.Entities.ChatMessage;
+import chatApp.Entities.RequestMessage;
 import chatApp.repository.MessageRepository;
+import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import java.sql.SQLDataException;
 
 @Service
 public class ChatService {
 
     private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
 
-    public ChatService(MessageRepository messageRepository) {
+    public ChatService(MessageRepository messageRepository, UserRepository userRepository) {
         this.messageRepository = messageRepository;
+        this.userRepository = userRepository;
     }
 
     /**
      * Adds a message to the database - content paired with sender
-     * @param chatMessage - the message's data
+     * @param RequestMessage - the message's data
      * @return a saved message with it's generated id
      */
-    public ChatMessage addMessage(ChatMessage chatMessage){
+    public ChatMessage addMessage(RequestMessage requestMessage){
+
+        String sender = userRepository.findByToken(requestMessage.getToken()).getNickName();
+
+        ChatMessage chatMessage = new ChatMessage(sender, requestMessage.getContent());
+
         return messageRepository.save(chatMessage);
     }
 }
