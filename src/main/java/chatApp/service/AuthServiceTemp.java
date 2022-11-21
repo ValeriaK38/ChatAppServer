@@ -34,7 +34,7 @@ public class AuthServiceTemp {
 
         String token = createToken();
         userTokens.put("" + id, token);
-        String res = token;
+        String res = tempUser.getNickName() +":" +token;
 
         tempUser.setToken(token);
         tempUser.switchUserStatus(UserStatus.ONLINE);

@@ -23,7 +23,6 @@ public class ChatService {
      * @return a saved message with it's generated id
      */
     public ChatMessage addMessage(RequestMessage requestMessage){
-
         String sender = userRepository.findByToken(requestMessage.getToken()).getNickName();
 
         ChatMessage chatMessage = new ChatMessage(sender, requestMessage.getContent());
