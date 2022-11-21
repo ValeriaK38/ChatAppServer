@@ -29,7 +29,7 @@ public class ChatController {
     @MessageMapping("/hello")
     @SendTo("/topic/mainChat")
     public ChatMessage greeting(HelloMessage message) throws Exception {
-        return new ChatMessage("SYSTEM", message.getName() + "joined the chat");
+        return new ChatMessage("SYSTEM", message.getName() + " has joined the chat");
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
