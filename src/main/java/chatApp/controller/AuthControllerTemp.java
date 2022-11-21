@@ -21,7 +21,7 @@ public class AuthControllerTemp {
 
 
     @RequestMapping(value = "login" , method = RequestMethod.POST)
-    public HashMap<String, String> logIn(@RequestBody User user) {
+    public String logIn(@RequestBody User user) {
 
         Matcher matchMail = emailPattern.matcher(user.getEmail());
         Matcher matchPassword = PASSWORD_PATTERN.matcher(user.getPassword());
