@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static chatApp.utilities.Utilities.createRandomString64;
+
 @Entity
 @Table(name = "user")
 public class User {
@@ -20,7 +22,7 @@ public class User {
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
-    private String lastname;
+    private String lastName;
     @Column(name = "user_nickname")
     private String nickName;
     @Column(name = "user_email", unique = true)
@@ -46,6 +48,12 @@ public class User {
     @Column(name = "user_is_Muted")
     private boolean isMuted;
 
+    @Column(name = "is_verified")
+    private boolean isVerified;
+
+    @Column(name = "verification_code", updatable = false)
+    private String verificationCode;
+
 
     public User() {
     }
@@ -62,12 +70,12 @@ public class User {
         this.firstName = firstName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getNickName() {
@@ -142,6 +150,8 @@ public class User {
         this.privacyStatus = privacyStatus;
     }
 
+    public void setVerificationCode(){this.verificationCode =  createRandomString64();}
+
     public Prefix getPrefix() {
         return prefix;
     }
@@ -156,6 +166,18 @@ public class User {
 
     public void setMuted(boolean muted) {
         isMuted = muted;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
     }
 
     public void adminMuteUser(User user){
@@ -181,18 +203,18 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && Objects.equals(firstName, user.firstName) && Objects.equals(lastname, user.lastname)
+        return id == user.id && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName)
                 && Objects.equals(nickName, user.nickName) && Objects.equals(email, user.email)
                 && Objects.equals(password, user.password) && Objects.equals(profilePhoto, user.profilePhoto)
                 && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(description, user.description)
                 && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus
-                && prefix == user.prefix;
+                && prefix == user.prefix  && verificationCode == user.verificationCode;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastname, nickName, email, password, profilePhoto, dateOfBirth,
-                description, userType, userStatus, privacyStatus, prefix);
+        return Objects.hash(id, firstName, lastName, nickName, email, password, profilePhoto, dateOfBirth,
+                description, userType, userStatus, privacyStatus, prefix, verificationCode);
     }
 
     @Override
@@ -202,12 +224,13 @@ public class User {
                 "\nEmail: " + email + "\nPassword: " + password + "\nNickname: " + nickName +
                 "\n-----Optional Information-----\n" +
                 "First name: " + firstName +
-                "\nLast name: " + lastname +
+                "\nLast name: " + lastName +
                 "\nDateOfBirth: " + dateOfBirth +
                 "\nDescription: " + description +
                 "\nUser type: " + userType +
                 "\nUser status: " + userStatus +
                 "\nPrivacy status: " + privacyStatus +
+                "\nIs validated: " + isVerified +
                 "\nPrefix: " + prefix;
     }
 
@@ -221,7 +244,7 @@ public class User {
         //Optional Parameters
         private String description;
         private String firstName;
-        private String lastname;
+        private String lastName;
         private byte[] profilePhoto;
         private LocalDate dateOfBirth;
         private UserType userType = UserType.REGISTERED;
@@ -229,6 +252,9 @@ public class User {
         private PrivacyStatus privacyStatus = PrivacyStatus.PUBLIC;
         private Prefix prefix;
         private boolean isMuted = false;
+        private boolean isValidated = false;
+        private String verificationCode = createRandomString64();
+
 
         public UserBuilder(String email, String password, String nickName) {
             this.email = email;
@@ -246,8 +272,8 @@ public class User {
             return this;
         }
 
-        public UserBuilder lastname(String lastname) {
-            this.lastname = lastname;
+        public UserBuilder lastName(String lastName) {
+            this.lastName = lastName;
             return this;
         }
 
@@ -294,11 +320,13 @@ public class User {
         this.prefix = builder.prefix;
         this.dateOfBirth = builder.dateOfBirth;
         this.firstName = builder.firstName;
-        this.lastname = builder.lastname;
+        this.lastName = builder.lastName;
         this.userStatus = builder.userStatus;
         this.userType = builder.userType;
         this.privacyStatus = builder.privacyStatus;
         this.profilePhoto = builder.profilePhoto;
         this.isMuted = builder.isMuted;
+        this.isVerified = builder.isValidated;
+        this.verificationCode = builder.verificationCode;
     }
 }
