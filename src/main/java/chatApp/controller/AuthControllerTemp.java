@@ -22,7 +22,6 @@ public class AuthControllerTemp {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z]).{8,20}$");
     private static final Pattern emailPattern = Pattern.compile(".+@.+\\.[a-z]+");
 
-
     @RequestMapping(value = "login" , method = RequestMethod.POST)
     public String logIn(@RequestBody User user) {
 
