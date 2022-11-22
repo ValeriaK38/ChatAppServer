@@ -114,17 +114,6 @@ public class UserController {
         }
     }
 
-    @RequestMapping( value ="/guest" ,method = RequestMethod.POST)
-    public String createGuest(@RequestBody User user){
-        try {
-            User guest = new User.UserBuilder(user.getNickName()).build();
-            return userService.addUGuest(guest).toString();
-        } catch (SQLDataException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "nickName already exists", e);
-        }
-    }
-
     @RequestMapping( value ="/getAll" ,method = RequestMethod.GET)
     public List<User> getAllUsers(){
         return (List<User>) userService.getAllUsers();

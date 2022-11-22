@@ -5,31 +5,30 @@ import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLDataException;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AuthServiceTemp {
     private final UserRepository userRepository;
-
     public AuthServiceTemp(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     public static HashMap<String, String> userTokens = new HashMap<>();
 
     public String logIn(String email, String password) {
 
         int id;
-
         User tempUser = userRepository.findByEmail(email);
+
         if (tempUser.getEmail().equals(email) && tempUser.getPassword().equals(password)) {
             id = tempUser.getId();
         } else {
             throw new IllegalArgumentException("the user is not valid");
         }
         if (userTokens.containsKey("" + id)) {
-            throw new IllegalArgumentException("the user is logged in ");
+            throw new IllegalArgumentException("the user is already logged in ");
         }
 
         String token = createToken();
@@ -38,7 +37,7 @@ public class AuthServiceTemp {
 
         tempUser.setToken(token);
         tempUser.switchUserStatus(UserStatus.ONLINE);
-        userRepository.saveAndFlush(tempUser);
+        userRepository.save(tempUser);
         return res;
     }
 
@@ -49,6 +48,28 @@ public class AuthServiceTemp {
             }
         }
         return false;
+    }
+
+    public String addUGuest(User guest) {
+        int id = guest.getId();
+
+        if (userRepository.findByNickName(guest.getNickName()) != null) {
+            throw new IllegalArgumentException(String.format("Nickname %s already exists in the user table", guest.getNickName()));
+        }
+        if (userTokens.containsKey("" + id)) {
+            throw new IllegalArgumentException("the guest is already logged in ");
+        }
+
+        String token = createToken();
+        userTokens.put("" + id, token);
+
+        String res = "Guest-" + guest.getNickName() +":" +token;
+
+        guest.setToken(token);
+        guest.switchUserStatus(UserStatus.ONLINE);
+        userRepository.save(guest);
+
+        return res;
     }
 
     private static String getSaltString(int stringLength) {
