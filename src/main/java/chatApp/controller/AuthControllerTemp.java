@@ -3,8 +3,11 @@ package chatApp.controller;
 import chatApp.Entities.User;
 import chatApp.service.AuthServiceTemp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLDataException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,5 +49,11 @@ public class AuthControllerTemp {
             throw new IllegalArgumentException("the token is not valid");
         }
         return authenticationService.authUser(id, token);
+    }
+
+    @RequestMapping( value ="/guest" ,method = RequestMethod.POST)
+    public String createGuest(@RequestBody User guest){
+        User tempGuest = new User.UserBuilder(guest.getNickName()).build();
+        return authenticationService.addUGuest(guest);
     }
 }

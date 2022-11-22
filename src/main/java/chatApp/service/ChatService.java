@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ChatService {
-
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
