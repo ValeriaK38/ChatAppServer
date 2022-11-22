@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.SQLDataException;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -37,6 +38,11 @@ public class UserController {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "nickName already exists", e);
         }
+    }
+
+    @RequestMapping( value ="/getAll" ,method = RequestMethod.GET)
+    public List<User> getAllUsers(){
+        return (List<User>) userService.getAllUsers();
     }
 
 

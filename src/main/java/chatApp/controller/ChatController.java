@@ -36,4 +36,6 @@ public class ChatController {
     public String createMessage(@RequestBody RequestMessage requestMessage){
         return chatService.addMessage(requestMessage).toString();
     }
+
+
 }
