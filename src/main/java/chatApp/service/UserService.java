@@ -5,6 +5,7 @@ import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLDataException;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -33,5 +34,9 @@ public class UserService {
             throw new SQLDataException(String.format("Nickname %s exists in users table", user.getNickName()));
         }
         return userRepository.save(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
