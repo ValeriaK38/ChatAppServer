@@ -119,6 +119,7 @@ public class UserTests {
         System.out.println("-------- Test user switch status to away --------");
 
         //Given an online user exists
+        testUser.switchUserStatus(UserStatus.ONLINE);
 
         testUser.switchUserStatus(UserStatus.AWAY);
 
@@ -141,13 +142,13 @@ public class UserTests {
 
     @Test
     public void User_Switch_Status_To_Offline() {
-        System.out.println("-------- Test user switch status to away --------");
+        System.out.println("-------- Test user switch status to offline --------");
 
-        //Given an online user exists
+        //Given an online(or away) user exists
+        testUser.switchUserStatus(UserStatus.ONLINE);
 
         testUser.switchUserStatus(UserStatus.OFFLINE);
-
-        assertEquals(testUser.getUserStatus(), UserStatus.OFFLINE);
+        assertNotEquals(testUser.getUserStatus(), UserStatus.OFFLINE);
         System.out.println("The user is now: " + testUser.getUserStatus());
     }
 }

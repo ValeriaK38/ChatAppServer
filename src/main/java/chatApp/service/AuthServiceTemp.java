@@ -1,5 +1,6 @@
 package chatApp.service;
 
+import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class AuthServiceTemp {
 
     public static HashMap<String, String> userTokens = new HashMap<>();
 
-    public HashMap<String, String> logIn(String email, String password) {
+    public String logIn(String email, String password) {
 
         int id;
 
@@ -33,9 +34,11 @@ public class AuthServiceTemp {
 
         String token = createToken();
         userTokens.put("" + id, token);
-        HashMap<String, String> res = new HashMap<>();
-        res.put("" + id, token);
+        String res = tempUser.getNickName() +":" +token;
 
+        tempUser.setToken(token);
+        tempUser.switchUserStatus(UserStatus.ONLINE);
+        userRepository.saveAndFlush(tempUser);
         return res;
     }
 

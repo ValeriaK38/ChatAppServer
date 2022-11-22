@@ -20,8 +20,8 @@ public class AuthControllerTemp {
     private static final Pattern emailPattern = Pattern.compile(".+@.+\\.[a-z]+");
 
 
-    @RequestMapping(method = RequestMethod.POST)
-    public HashMap<String, String> logIn(@RequestBody User user) {
+    @RequestMapping(value = "login" , method = RequestMethod.POST)
+    public String logIn(@RequestBody User user) {
 
         Matcher matchMail = emailPattern.matcher(user.getEmail());
         Matcher matchPassword = PASSWORD_PATTERN.matcher(user.getPassword());

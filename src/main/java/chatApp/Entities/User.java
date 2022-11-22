@@ -45,8 +45,10 @@ public class User {
     private PrivacyStatus privacyStatus;
     @Column(name = "user_prefix")
     private Prefix prefix;
-    @Column(name = "user_is_Muted")
+    @Column(name = "user_is_muted")
     private boolean isMuted;
+    @Column(name = "user_token")
+    private String token;
 
     @Column(name = "is_verified")
     private boolean isVerified;
@@ -168,6 +170,7 @@ public class User {
         isMuted = muted;
     }
 
+
     public boolean isVerified() {
         return isVerified;
     }
@@ -178,6 +181,14 @@ public class User {
 
     public String getVerificationCode() {
         return verificationCode;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+
     }
 
     public void adminMuteUser(User user){
@@ -195,7 +206,9 @@ public class User {
     }
 
     public void switchUserStatus(UserStatus userStatus){
-        this.userStatus = userStatus;
+        if(!userStatus.equals(UserStatus.OFFLINE) ){
+            this.userStatus = userStatus;
+        }
     }
 
     @Override
@@ -252,14 +265,23 @@ public class User {
         private PrivacyStatus privacyStatus = PrivacyStatus.PUBLIC;
         private Prefix prefix;
         private boolean isMuted = false;
+
         private boolean isValidated = false;
         private String verificationCode = createRandomString64();
+
+        private String token;
 
 
         public UserBuilder(String email, String password, String nickName) {
             this.email = email;
             this.password = password;
             this.nickName = nickName;
+        }
+
+
+        public  UserBuilder(String nickName) {
+            this.nickName = nickName;
+            this.prefix = Prefix.GUEST;
         }
 
         public UserBuilder description(String description) {
@@ -307,6 +329,11 @@ public class User {
             return this;
         }
 
+        public UserBuilder token(String token){
+            this.token = token;
+            return this;
+        }
+
         public User build() {
             return new User(this);
         }
@@ -326,7 +353,10 @@ public class User {
         this.privacyStatus = builder.privacyStatus;
         this.profilePhoto = builder.profilePhoto;
         this.isMuted = builder.isMuted;
+
         this.isVerified = builder.isValidated;
         this.verificationCode = builder.verificationCode;
+        this.token = builder.token;
+
     }
 }
