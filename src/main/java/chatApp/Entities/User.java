@@ -8,15 +8,15 @@ import com.sun.istack.NotNull;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
+import static chatApp.utilities.Utilities.createRandomString64;
 
 @Entity
 @Table(name = "user")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_Id")
-    private Long id;
+    private int id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
@@ -47,14 +47,15 @@ public class User {
     private boolean isMuted;
     @Column(name = "user_token")
     private String token;
-
     @Column(name = "is_verified")
     private boolean isVerified;
+    @Column(name = "verification_code", updatable = false)
+    private String verificationCode;
 
     public User() {
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -146,6 +147,8 @@ public class User {
         this.privacyStatus = privacyStatus;
     }
 
+    public void setVerificationCode(){this.verificationCode =  createRandomString64();}
+
     public Prefix getPrefix() {
         return prefix;
     }
@@ -162,13 +165,16 @@ public class User {
         isMuted = muted;
     }
 
-
     public boolean isVerified() {
         return isVerified;
     }
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
     }
 
     public String getToken() {
@@ -209,13 +215,14 @@ public class User {
                 && Objects.equals(nickName, user.nickName) && Objects.equals(email, user.email)
                 && Objects.equals(password, user.password) && Objects.equals(profilePhoto, user.profilePhoto)
                 && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(description, user.description)
-                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus;
+                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus
+                && prefix == user.prefix  && verificationCode == user.verificationCode;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, nickName, email, password, profilePhoto, dateOfBirth,
-                description, userType, userStatus, privacyStatus, prefix);
+                description, userType, userStatus, privacyStatus, prefix, verificationCode);
     }
 
     @Override
@@ -231,7 +238,7 @@ public class User {
                 "\nUser type: " + userType +
                 "\nUser status: " + userStatus +
                 "\nPrivacy status: " + privacyStatus +
-                "\nIs verified: " + isVerified +
+                "\nIs validated: " + isVerified +
                 "\nPrefix: " + prefix;
     }
 
@@ -253,17 +260,15 @@ public class User {
         private PrivacyStatus privacyStatus = PrivacyStatus.PUBLIC;
         private Prefix prefix;
         private boolean isMuted = false;
-
         private boolean isValidated = false;
+        private String verificationCode = createRandomString64();
         private String token;
-
 
         public UserBuilder(String email, String password, String nickName) {
             this.email = email;
             this.password = password;
             this.nickName = nickName;
         }
-
 
         public  UserBuilder(String nickName) {
             this.nickName = nickName;
@@ -339,9 +344,8 @@ public class User {
         this.privacyStatus = builder.privacyStatus;
         this.profilePhoto = builder.profilePhoto;
         this.isMuted = builder.isMuted;
-
         this.isVerified = builder.isValidated;
+        this.verificationCode = builder.verificationCode;
         this.token = builder.token;
-
     }
 }

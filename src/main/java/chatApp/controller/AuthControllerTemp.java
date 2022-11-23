@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.sql.SQLDataException;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,11 +23,9 @@ public class AuthControllerTemp {
 
     @Autowired
     private AuthServiceTemp authenticationService;
-
-    private static final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z]).{8,20}$");
-    private static final Pattern nicknamePattern = Pattern.compile("^[A-Za-z][A-Za-z0-9_]{4,20}$");
-    private static final Pattern stringNamePattern = Pattern.compile("[A-Za-z]{2,20}");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z]).{8,20}$");
     private static final Pattern emailPattern = Pattern.compile(".+@.+\\.[a-z]+");
+
 
     /**
      * The method sends to controller the user's id to validate it
@@ -119,16 +119,16 @@ public class AuthControllerTemp {
     public String logIn(@RequestBody User user) {
 
         Matcher matchMail = emailPattern.matcher(user.getEmail());
-        Matcher matchPassword = passwordPattern.matcher(user.getPassword());
+        Matcher matchPassword = PASSWORD_PATTERN.matcher(user.getPassword());
 
         boolean emailMatchFound = matchMail.matches();
         boolean passwordMatchFound = matchPassword.matches();
 
         if (!emailMatchFound) {
-            throw new IllegalArgumentException("invalid email, use pattern: example@gmail.com");
+            throw new IllegalArgumentException("write email properly example@ex.com");
         }
         if (!passwordMatchFound) {
-            throw new IllegalArgumentException("invalid password: need to be at lest 8 characters long, and contain numbers and letters");
+            throw new IllegalArgumentException("password isn't proper password");
         }
         if (authenticationService.checkIfEmailExists(user.getEmail())) {
             return authenticationService.logIn(user.getEmail(), user.getPassword());
@@ -138,9 +138,14 @@ public class AuthControllerTemp {
 
     public boolean authUser(String id, String token) {
         if (token.length() != 18) {
-            throw new IllegalArgumentException("invalid token");
+            throw new IllegalArgumentException("the token is not valid");
         }
         return authenticationService.authUser(id, token);
     }
 
+    @RequestMapping( value ="/guest" ,method = RequestMethod.POST)
+    public String createGuest(@RequestBody User guest){
+        User tempGuest = new User.UserBuilder(guest.getNickName()).build();
+        return authenticationService.addUGuest(guest);
+    }
 }
