@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLDataException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -89,17 +88,5 @@ public class AuthServiceTemp {
 
     public boolean checkIfEmailExists(String email) {
         return (userRepository.findByEmail(email) != null);
-    }
-
-
-    public User addUGuest(User user) throws SQLDataException {
-        if (userRepository.findByNickName(user.getNickName()) != null) {
-            throw new SQLDataException(String.format("Nickname %s exists in users table", user.getNickName()));
-        }
-        return userRepository.save(user);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
     }
 }
