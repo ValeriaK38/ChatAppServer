@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static chatApp.utilities.Utilities.createRandomString64;
+import static chatApp.utilities.Utilities.createRandomString;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
@@ -113,7 +113,7 @@ class AuthControllerTempTest {
         System.out.println("-------- Test guest logs in successfully --------");
 
         //Given a user enters a unique nickname
-        testGuest.setNickName(createRandomString64());
+        testGuest.setNickName(createRandomString(10));
 
         //When he tries to enter the main chat
         String createdGuest = authControllerTemp.createGuest(testGuest);
