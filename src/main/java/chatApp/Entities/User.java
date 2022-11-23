@@ -9,8 +9,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import static chatApp.utilities.Utilities.createRandomString64;
-
 @Entity
 @Table(name = "user")
 public class User {
@@ -18,7 +16,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_Id")
-    private int id;
+    private Long id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
@@ -53,14 +51,10 @@ public class User {
     @Column(name = "is_verified")
     private boolean isVerified;
 
-    @Column(name = "verification_code", updatable = false)
-    private String verificationCode;
-
-
     public User() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -152,8 +146,6 @@ public class User {
         this.privacyStatus = privacyStatus;
     }
 
-    public void setVerificationCode(){this.verificationCode =  createRandomString64();}
-
     public Prefix getPrefix() {
         return prefix;
     }
@@ -178,9 +170,6 @@ public class User {
     public void setVerified(boolean verified) {
         isVerified = verified;
     }
-
-    public String getVerificationCode() {
-        return verificationCode;
 
     public String getToken() {
         return token;
@@ -220,14 +209,13 @@ public class User {
                 && Objects.equals(nickName, user.nickName) && Objects.equals(email, user.email)
                 && Objects.equals(password, user.password) && Objects.equals(profilePhoto, user.profilePhoto)
                 && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(description, user.description)
-                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus
-                && prefix == user.prefix  && verificationCode == user.verificationCode;
+                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, nickName, email, password, profilePhoto, dateOfBirth,
-                description, userType, userStatus, privacyStatus, prefix, verificationCode);
+                description, userType, userStatus, privacyStatus, prefix);
     }
 
     @Override
@@ -243,7 +231,7 @@ public class User {
                 "\nUser type: " + userType +
                 "\nUser status: " + userStatus +
                 "\nPrivacy status: " + privacyStatus +
-                "\nIs validated: " + isVerified +
+                "\nIs verified: " + isVerified +
                 "\nPrefix: " + prefix;
     }
 
@@ -267,8 +255,6 @@ public class User {
         private boolean isMuted = false;
 
         private boolean isValidated = false;
-        private String verificationCode = createRandomString64();
-
         private String token;
 
 
@@ -355,7 +341,6 @@ public class User {
         this.isMuted = builder.isMuted;
 
         this.isVerified = builder.isValidated;
-        this.verificationCode = builder.verificationCode;
         this.token = builder.token;
 
     }
