@@ -1,8 +1,5 @@
 package chatApp.controller;
 
-import chatApp.Entities.Enums.PrivacyStatus;
-import chatApp.Entities.Enums.UserStatus;
-import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
 import chatApp.service.AuthServiceTemp;
@@ -12,12 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.SQLDataException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,8 +45,8 @@ public class AuthControllerTemp {
     /**
      * The controller creates user based on input from the registration client page
      *
-     * @param  request - user's data to add to the DB and url : sends verification email with the url
-     * catches SQLDataException when the provided user already exists by unique fields
+     * @param request - user's data to add to the DB and url : sends verification email with the url
+     *                catches SQLDataException when the provided user already exists by unique fields
      * @return server POST response.
      */
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
@@ -61,7 +54,7 @@ public class AuthControllerTemp {
         try {
             User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).profilePhoto(null).build();
             validateInputUser(user);
-            if(request.getDateOfBirth()!= null) {
+            if (request.getDateOfBirth() != null) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate dateTime = LocalDate.parse(request.getDateOfBirth(), formatter);
                 user.setDateOfBirth(dateTime);
@@ -149,4 +142,5 @@ public class AuthControllerTemp {
         }
         return authenticationService.authUser(id, token);
     }
+
 }
