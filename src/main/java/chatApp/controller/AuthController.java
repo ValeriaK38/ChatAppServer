@@ -2,7 +2,7 @@ package chatApp.controller;
 
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
-import chatApp.service.AuthServiceTemp;
+import chatApp.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +17,9 @@ import java.util.regex.Pattern;
 @RestController
 @CrossOrigin
 @RequestMapping("/auth")
-public class AuthControllerTemp {
-
+public class AuthController {
     @Autowired
-    private AuthServiceTemp authenticationService;
+    private AuthService authenticationService;
     private static final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z]).{8,20}$");
     private static final Pattern nicknamePattern = Pattern.compile("^[A-Za-z][A-Za-z0-9_]{4,20}$");
     private static final Pattern stringNamePattern = Pattern.compile("[A-Za-z]{2,20}");
@@ -113,6 +112,14 @@ public class AuthControllerTemp {
         }
     }
 
+    /**
+     * Does the log in process for a registered user in our database.
+     *
+     * @param user    - The user we want to log in.
+     * @return Returns a string which consists of nickName:Token, This helps us in the client to parse the response
+     * and save the token and nickname in the session storage for later use.
+     * In general the login is supposed to generate a token for the user and set his status to ONLINE.
+     */
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public String logIn(@RequestBody User user) {
 
@@ -140,7 +147,14 @@ public class AuthControllerTemp {
         }
         return authenticationService.authUser(id, token);
     }
-
+    /**
+     * Allows a user to enter a nickName which must be unique and enter the main chatroom.
+     *
+     * @param guest - The guest we want to add to the chat room.
+     * @return Returns a string which consists of nickName:Token, This helps us in the client to parse the response
+     * and save the token and nickname in the session storage for later use.
+     * The guest will get the Guest- prefix before his nickname and he will be shown with the status ONLINE.
+     */
     @RequestMapping(value = "/guest", method = RequestMethod.POST)
     public String createGuest(@RequestBody User guest) {
         User tempGuest = new User.UserBuilder(guest.getNickName()).build();

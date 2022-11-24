@@ -5,6 +5,7 @@ import chatApp.controller.VerificationEmailController;
 import chatApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.sql.SQLDataException;
 import java.util.NoSuchElementException;
 import java.util.List;
@@ -17,13 +18,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User addUGuest(User user) throws SQLDataException {
-        if (userRepository.findByNickName(user.getNickName()) != null) {
-            throw new SQLDataException(String.format("Nickname %s exists in users table", user.getNickName()));
-        }
-        return userRepository.save(user);
-    }
-
+    /**
+     * @return the list of all the users in the database.
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

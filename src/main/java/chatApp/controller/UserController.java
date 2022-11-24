@@ -13,9 +13,8 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/register") //user
+@RequestMapping("/user")
 public class UserController {
-
     @Autowired
     private UserService userService;
 
@@ -23,6 +22,4 @@ public class UserController {
     public List<User> getAllUsers() {
         return (List<User>) userService.getAllUsers();
     }
-
-
 }

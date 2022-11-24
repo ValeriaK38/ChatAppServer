@@ -2,17 +2,9 @@ package chatApp.Entities;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "RequestMessage")
 public class RequestMessage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "message_id")
     private int id;
-
-    @Column(name = "sender_token")
     private String token;
-    @Column(name = "message_content")
     private String content;
 
     public RequestMessage() {
