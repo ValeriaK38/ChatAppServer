@@ -1,11 +1,9 @@
 package chatApp.Entities;
 
-import chatApp.Entities.Enums.Prefix;
 import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import com.sun.istack.NotNull;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -42,8 +40,6 @@ public class User {
     private UserStatus userStatus;
     @Column(name = "user_privacy")
     private PrivacyStatus privacyStatus;
-    @Column(name = "user_prefix")
-    private Prefix prefix;
     @Column(name = "user_is_muted")
     private boolean isMuted;
     @Column(name = "user_token")
@@ -147,14 +143,6 @@ public class User {
         this.privacyStatus = privacyStatus;
     }
 
-    public Prefix getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(Prefix prefix) {
-        this.prefix = prefix;
-    }
-
     public boolean isMuted() {
         return isMuted;
     }
@@ -209,14 +197,13 @@ public class User {
                 && Objects.equals(nickName, user.nickName) && Objects.equals(email, user.email)
                 && Objects.equals(password, user.password) && Objects.equals(profilePhoto, user.profilePhoto)
                 && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(description, user.description)
-                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus
-                && prefix == user.prefix;
+                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, nickName, email, password, profilePhoto, dateOfBirth,
-                description, userType, userStatus, privacyStatus, prefix);
+                description, userType, userStatus, privacyStatus);
     }
 
     @Override
@@ -232,8 +219,7 @@ public class User {
                 "\nUser type: " + userType +
                 "\nUser status: " + userStatus +
                 "\nPrivacy status: " + privacyStatus +
-                "\nIs verified: " + isVerified +
-                "\nPrefix: " + prefix;
+                "\nIs verified: " + isVerified;
     }
 
     public static class UserBuilder {
@@ -252,7 +238,6 @@ public class User {
         private UserType userType = UserType.REGISTERED;
         private UserStatus userStatus = UserStatus.OFFLINE;
         private PrivacyStatus privacyStatus = PrivacyStatus.PUBLIC;
-        private Prefix prefix;
         private boolean isMuted = false;
         private boolean isValidated = false;
         private String token;
@@ -265,7 +250,6 @@ public class User {
 
         public UserBuilder(String nickName) {
             this.nickName = nickName;
-            this.prefix = Prefix.GUEST;
         }
 
         public UserBuilder description(String description) {
@@ -303,11 +287,6 @@ public class User {
             return this;
         }
 
-        public UserBuilder dateOfBirth(Prefix prefix) {
-            this.prefix = prefix;
-            return this;
-        }
-
         public UserBuilder dateOfBirth(LocalDate dateOfBirth) {
             this.dateOfBirth = dateOfBirth;
             return this;
@@ -328,7 +307,6 @@ public class User {
         this.password = builder.password;
         this.nickName = builder.nickName;
         this.description = builder.description;
-        this.prefix = builder.prefix;
         this.dateOfBirth = builder.dateOfBirth;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;

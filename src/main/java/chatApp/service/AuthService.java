@@ -9,17 +9,16 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLDataException;
 import java.util.HashMap;
-import java.util.List;
 
 import static chatApp.utilities.Utilities.createRandomString;
 
 @Service
-public class AuthServiceTemp {
+public class AuthService {
     private final UserRepository userRepository;
     @Autowired
     VerificationEmailController verificationEmailController;
 
-    public AuthServiceTemp(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -34,10 +33,10 @@ public class AuthServiceTemp {
      */
     public User addUser(User user, String url) throws SQLDataException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new SQLDataException(String.format("Email %s exists in users table", user.getEmail()));
+            throw new SQLDataException(String.format("Email %s exists in user table", user.getEmail()));
         }
         if (userRepository.findByNickName(user.getNickName()) != null) {
-            throw new SQLDataException(String.format("Nickname %s exists in users table", user.getNickName()));
+            throw new SQLDataException(String.format("Nickname %s exists in user table", user.getNickName()));
         }
         userRepository.save(user);
         verificationEmailController.sendEmail(user, url);
@@ -60,24 +59,36 @@ public class AuthServiceTemp {
         }
     }
 
+    /**
+     * Does the log in process for a registered user in our database.
+     *
+     * @param email    - The email of the user we want to log in.
+     * @param password - The password of the user we want to log in.
+     * @return Returns a string which consists of nickName:Token, This helps us in the client to parse the response
+     * and save the token and nickname in the session storage for later use.
+     * In general the login is supposed to generate a token for the user and set his status to ONLINE.
+     */
     public String logIn(String email, String password) {
 
-        Long id;
         User tempUser = userRepository.findByEmail(email);
 
-        if (tempUser.getEmail().equals(email) && tempUser.getPassword().equals(password)) {
-            id = tempUser.getId();
-        } else {
-            throw new IllegalArgumentException("the user is not valid");
+        if (tempUser == null) {
+            throw new RuntimeException("The user is not registered in the database");
         }
-        if (userTokens.containsKey("" + id)) {
-            throw new IllegalArgumentException("the user is already logged in ");
+
+        if (!tempUser.getEmail().equals(email)) {
+            throw new IllegalArgumentException("You have entered an incorrect email");
+        } else if (!tempUser.getPassword().equals(password)) {
+            throw new IllegalArgumentException("You have entered an incorrect password, please try again");
+        }
+        if (userTokens.containsKey(tempUser.getNickName())) {
+            throw new IllegalArgumentException("The user is already logged in ");
         }
 
         String token = createToken();
-        userTokens.put("" + id, token);
-        String res = tempUser.getNickName() + ":" + token;
+        userTokens.put(tempUser.getNickName(), token);
 
+        String res = tempUser.getNickName() + ":" + token;
         tempUser.setToken(token);
         tempUser.switchUserStatus(UserStatus.ONLINE);
         userRepository.save(tempUser);
@@ -93,39 +104,50 @@ public class AuthServiceTemp {
         return false;
     }
 
+    /**
+     * Allows a user to enter a nickName which must be unique and enter the main chatroom.
+     *
+     * @param guest - The guest we want to add to the chat room.
+     * @return Returns a string which consists of nickName:Token, This helps us in the client to parse the response
+     * and save the token and nickname in the session storage for later use.
+     * The guest will get the Guest- prefix before his nickname and he will be shown with the status ONLINE.
+     */
     public String addUGuest(User guest) {
-        Long id = guest.getId();
-
         if (userRepository.findByNickName(guest.getNickName()) != null) {
             throw new IllegalArgumentException(String.format("Nickname %s already exists in the user table", guest.getNickName()));
         }
-        if (userTokens.containsKey("" + id)) {
+
+        if (userTokens.containsKey(guest.getNickName())) {
             throw new IllegalArgumentException("the guest is already logged in ");
         }
 
         String token = createToken();
-        userTokens.put("" + id, token);
+        userTokens.put(guest.getNickName(), token);
+
 
         String res = "Guest-" + guest.getNickName() + ":" + token;
-
         guest.setToken(token);
         guest.switchUserStatus(UserStatus.ONLINE);
         userRepository.save(guest);
-
         return res;
     }
 
-
+    /**
+     * Creates a token to be given to users during the login process
+     *
+     * @return a String which represents a unique token
+     */
     public static String createToken() {
         return createRandomString(18);
     }
 
+    /**
+     * Checks if an email exists in our database (meaning someone has registered with said email).
+     *
+     * @param email - The email we want to check
+     * @return True or False if it exists or not
+     */
     public boolean checkIfEmailExists(String email) {
         return (userRepository.findByEmail(email) != null);
     }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
 }

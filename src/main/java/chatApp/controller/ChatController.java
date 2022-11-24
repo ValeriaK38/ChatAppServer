@@ -16,7 +16,6 @@ import java.sql.SQLDataException;
 @CrossOrigin
 @RequestMapping("/message")
 public class ChatController {
-
     @Autowired
     private ChatService chatService;
 
@@ -36,6 +35,4 @@ public class ChatController {
     public String createMessage(@RequestBody RequestMessage requestMessage){
         return chatService.addMessage(requestMessage).toString();
     }
-
-
 }

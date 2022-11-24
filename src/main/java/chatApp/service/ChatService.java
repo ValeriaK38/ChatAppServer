@@ -18,10 +18,11 @@ public class ChatService {
 
     /**
      * Adds a message to the database - content paired with sender
-     * @param RequestMessage - the message's data
+     *
+     * @param requestMessage - the message's data with the token of the sender.
      * @return a saved message with it's generated id
      */
-    public ChatMessage addMessage(RequestMessage requestMessage){
+    public ChatMessage addMessage(RequestMessage requestMessage) {
         String sender = userRepository.findByToken(requestMessage.getToken()).getNickName();
 
         ChatMessage chatMessage = new ChatMessage(sender, requestMessage.getContent());

@@ -2,7 +2,7 @@ package chatApp.controller;
 
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
-import chatApp.service.AuthServiceTemp;
+import chatApp.service.AuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthControllerTempTest {
 
     @Autowired
-    AuthControllerTemp authControllerTemp;
+    AuthController authControllerTemp;
     @Autowired
-    private AuthServiceTemp authServiceTemp;
+    private AuthService authServiceTemp;
 
     @Autowired
     private static UserRepository userRepository;
