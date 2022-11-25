@@ -1,13 +1,13 @@
 package chatApp.Entities;
 
-public class HelloMessage {
+public class SystemMessage {
 
     private String name;
 
-    public HelloMessage() {
+    public SystemMessage() {
     }
 
-    public HelloMessage(String name) {
+    public SystemMessage(String name) {
         this.name = name;
     }
 
