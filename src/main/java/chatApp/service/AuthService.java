@@ -1,6 +1,7 @@
 package chatApp.service;
 
 import chatApp.Entities.Enums.UserStatus;
+import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.controller.VerificationEmailController;
 import chatApp.repository.UserRepository;
@@ -97,6 +98,32 @@ public class AuthService {
         return res;
     }
 
+    /**
+     * Does the log out process for a logged-in user in our database(When clicking the log out button).
+     *
+     * @param nickName    - The nickname of the user we want to log out.
+     * @return Returns a string which consists of a successful log-out message
+     */
+    public String logOut(String nickName) {
+
+        //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
+        if(nickName.startsWith("Guest")){
+            nickName = nickName.replace("Guest-", "");
+        }
+
+        User tempUser = userRepository.findByNickName(nickName);
+        userTokens.remove(nickName);
+
+        if(!(tempUser.getUserType() == UserType.GUEST)){
+            tempUser.setUserStatus(UserStatus.OFFLINE);
+            tempUser.setToken(null);
+            userRepository.save(tempUser);
+        }else{
+            userRepository.delete(tempUser);
+        }
+        return "The user logged out successfully";
+    }
+
     public boolean authUser(String id, String token) {
         for (HashMap.Entry<String, String> entry : userTokens.entrySet()) {
             if (entry.getKey().equals(id)) {
@@ -130,6 +157,7 @@ public class AuthService {
         String res = "Guest-" + guest.getNickName() + ":" + token;
         guest.setToken(token);
         guest.switchUserStatus(UserStatus.ONLINE);
+        guest.setUserType(UserType.GUEST);
         userRepository.save(guest);
         return res;
     }
@@ -152,4 +180,5 @@ public class AuthService {
     public boolean checkIfEmailExists(String email) {
         return (userRepository.findByEmail(email) != null);
     }
+
 }
