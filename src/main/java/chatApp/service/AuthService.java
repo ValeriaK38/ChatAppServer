@@ -75,7 +75,9 @@ public class AuthService {
         if (tempUser == null) {
             throw new RuntimeException("The user is not registered in the database");
         }
-
+        if(!tempUser.isVerified()){
+            throw new IllegalStateException("The user is not verified. please check your email and activate your account");
+        }
         if (!tempUser.getEmail().equals(email)) {
             throw new IllegalArgumentException("You have entered an incorrect email");
         } else if (!tempUser.getPassword().equals(password)) {
