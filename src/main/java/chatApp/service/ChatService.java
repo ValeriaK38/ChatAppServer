@@ -2,9 +2,12 @@ package chatApp.service;
 
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.RequestMessage;
+import chatApp.Entities.User;
 import chatApp.repository.MessageRepository;
 import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ChatService {
@@ -29,4 +32,9 @@ public class ChatService {
 
         return messageRepository.save(chatMessage);
     }
+
+    public List<ChatMessage> getAllMesseges() {
+        return messageRepository.findAll();
+    }
+
 }

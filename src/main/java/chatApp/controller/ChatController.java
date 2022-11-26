@@ -1,5 +1,4 @@
 package chatApp.controller;
-
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.SystemMessage;
 import chatApp.Entities.RequestMessage;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -37,5 +37,11 @@ public class ChatController {
     @RequestMapping(value = "create", method = RequestMethod.POST)
     public String createMessage(@RequestBody RequestMessage requestMessage){
         return chatService.addMessage(requestMessage).toString();
+    }
+
+
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    public List<ChatMessage> getAllUsers() {
+        return chatService.getAllMesseges();
     }
 }
