@@ -22,4 +22,8 @@ public class UserController {
     public List<User> getAllUsers() {
         return (List<User>) userService.getAllUsers();
     }
+
+    public User getUserByNickname(String nickName){
+        return userService.getUserByNickname(nickName);
+    }
 }

@@ -114,6 +114,10 @@ public class AuthService {
         User tempUser = userRepository.findByNickName(nickName);
         userTokens.remove(nickName);
 
+        if(tempUser.getUserStatus() == UserStatus.OFFLINE){
+            throw new IllegalStateException("The user is already offline! cant log out again");
+        }
+
         if(!(tempUser.getUserType() == UserType.GUEST)){
             tempUser.setUserStatus(UserStatus.OFFLINE);
             tempUser.setToken(null);
@@ -180,5 +184,4 @@ public class AuthService {
     public boolean checkIfEmailExists(String email) {
         return (userRepository.findByEmail(email) != null);
     }
-
 }
