@@ -1,8 +1,10 @@
 package chatApp.controller;
 
+import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
 import chatApp.service.AuthService;
+import chatApp.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,29 +18,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class AuthControllerTempTest {
+class AuthControllerTest {
 
     @Autowired
-    AuthController authControllerTemp;
+    AuthController authController;
     @Autowired
-    private AuthService authServiceTemp;
-
+    private AuthService authService;
     @Autowired
     private static UserRepository userRepository;
+    @Autowired
+    UserController userController;
+    @Autowired
+    private UserService userService;
     private static User testUser;
     private static User testGuest;
+    private static User testLogoutUser;
 
     @BeforeEach
     public void setup() {
         testUser = new User.UserBuilder("leon@test.com", "leon1234", "LeonTest").firstName("leon").build();
         testGuest = new User.UserBuilder("testGuest123").build();
+        testLogoutUser = new User.UserBuilder("leon12345@test.com", "leon1234", "Test User 123").build();
+        authController.logIn(testLogoutUser);
     }
 
     @AfterEach
     public void cleanup() {
         testUser = null;
         testGuest = null;
-        authServiceTemp.userTokens.clear();
+        authService.userTokens.clear();
     }
 
     @Test
@@ -47,7 +55,7 @@ class AuthControllerTempTest {
 
         //Given there is a registered user.
 
-        String loggedInUser = authControllerTemp.logIn(testUser); // When he logs in
+        String loggedInUser = authController.logIn(testUser); // When he logs in
         String[] result = loggedInUser.split(":");
 
         assertEquals(result[0], testUser.getNickName()); // Then he gets a token
@@ -61,10 +69,10 @@ class AuthControllerTempTest {
         System.out.println("-------- Test logged in user fails to login again --------");
 
         //Given there is a logged in user.
-        authControllerTemp.logIn(testUser);
+        authController.logIn(testUser);
 
         // When he tries to log in again Then he fails
-        assertThrows(Exception.class, () -> authControllerTemp.logIn(testUser));
+        assertThrows(Exception.class, () -> authController.logIn(testUser));
 
         System.out.println("The user was already logged in, failed to log in again.");
     }
@@ -77,7 +85,7 @@ class AuthControllerTempTest {
         testUser.setEmail("Invalidemail@test.com");
 
         //When He tries to login THen he fails
-        assertThrows(Exception.class, () -> authControllerTemp.logIn(testUser));
+        assertThrows(Exception.class, () -> authController.logIn(testUser));
 
         System.out.println("The user is not registered, failed to log in.");
     }
@@ -90,7 +98,7 @@ class AuthControllerTempTest {
         testUser.setEmail("Invalidemail");
 
         //When He tries to login THen he fails
-        assertThrows(Exception.class, () -> authControllerTemp.logIn(testUser));
+        assertThrows(Exception.class, () -> authController.logIn(testUser));
 
         System.out.println("The email is in an invalid format");
     }
@@ -103,7 +111,7 @@ class AuthControllerTempTest {
         testUser.setPassword("InvalidPassword");
 
         //When He tries to login THen he fails
-        assertThrows(Exception.class, () -> authControllerTemp.logIn(testUser));
+        assertThrows(Exception.class, () -> authController.logIn(testUser));
 
         System.out.println("The password is in an invalid format");
     }
@@ -116,7 +124,7 @@ class AuthControllerTempTest {
         testGuest.setNickName(createRandomString(10));
 
         //When he tries to enter the main chat
-        String createdGuest = authControllerTemp.createGuest(testGuest);
+        String createdGuest = authController.createGuest(testGuest);
         String[] result = createdGuest.split(":");
 
         //Then he gets a token and enters the chat.
@@ -133,8 +141,69 @@ class AuthControllerTempTest {
         //Given there is a guest in the Database
 
         //When someone tries to enter as a guest with the same nickName Then he fails to login
-        assertThrows(Exception.class, () -> authControllerTemp.createGuest(testGuest));
+        assertThrows(Exception.class, () -> authController.createGuest(testGuest));
 
         System.out.println("The nickname is already taken, please choose a different one");
+    }
+
+    @Test
+    public void User_Logs_Out_Successfully(){
+        System.out.println("-------- Test User logs out successfully --------");
+
+        //Given there is a logged in user.
+
+        //When he tries to logout
+        authController.logOut(testLogoutUser);
+
+        //Then his status changes to OFFLINE and his token becomes null
+        assertNull(testLogoutUser.getToken());
+        assertEquals(testLogoutUser.getUserStatus(), UserStatus.OFFLINE);
+
+        System.out.println("The user is now: " + testLogoutUser.getUserStatus());
+    }
+
+    @Test
+    public void Logged_Out_User_Tries_To_Log_Out(){
+        System.out.println("-------- Test logged out user tries to log out--------");
+        //This should not be possible , only someone who entered the chat can see the logout button but checking just in case.
+
+        //Given there is a logged out user.
+        authController.logOut(testLogoutUser);
+
+        //When he tries to logout Then he fails
+        assertThrows(Exception.class, () -> authController.logOut(testLogoutUser));
+
+        System.out.println("The user was already logged out , cant log out again.");
+    }
+
+    @Test
+    public void Not_Registered_User_Tries_To_Log_Out(){
+        System.out.println("-------- Test not registered user tries to log out--------");
+        //This should not be possible , only someone who entered the chat can see the logout button but checking just in case.
+
+        //Given there is a user we dont have in our DB.
+        User testUserNotExists = new User.UserBuilder("bad@user.com", "leon1234", "Nope").build();
+
+        //When he tries to logout Then he fails
+        assertThrows(Exception.class, () -> authController.logOut(testUserNotExists));
+
+        System.out.println("The user was not registered , cant log out.");
+    }
+
+    @Test
+    public void Guest_Logs_Out_Successfully(){
+        System.out.println("-------- Test guest logs out successfully --------");
+
+        //Given there is a logged in guest.
+        User testGuestLogOut = new User.UserBuilder("testGuestLogOut").build();
+        authController.createGuest(testGuestLogOut);
+
+        //When he tries to logout
+        authController.logOut(testGuestLogOut);
+
+        //Then he is deleted from the DB to free up the nickname.
+        assertNull(userController.getUserByNickname(testGuestLogOut.getNickName()));
+
+        System.out.println("The guest was deleted from the database!");
     }
 }

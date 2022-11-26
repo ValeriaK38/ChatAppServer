@@ -41,7 +41,7 @@ public class ChatController {
 
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-    public List<ChatMessage> getAllUsers() {
+    public List<ChatMessage> getAllMessages() {
         return chatService.getAllMesseges();
     }
 }

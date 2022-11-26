@@ -158,6 +158,7 @@ public class AuthController {
         }
         return authenticationService.authUser(id, token);
     }
+
     /**
      * Allows a user to enter a nickName which must be unique and enter the main chatroom.
      *
