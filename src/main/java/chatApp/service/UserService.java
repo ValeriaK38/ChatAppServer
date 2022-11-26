@@ -1,13 +1,9 @@
 package chatApp.service;
 
 import chatApp.Entities.User;
-import chatApp.controller.VerificationEmailController;
 import chatApp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLDataException;
-import java.util.NoSuchElementException;
 import java.util.List;
 
 @Service
@@ -27,5 +23,17 @@ public class UserService {
 
     public User getUserByNickname(String nickName) {
         return userRepository.findByNickName(nickName);
+    }
+
+    public void muteUnmute(String adminNickName, String userNickName, String status) {
+        User tempUser = userRepository.findByNickName(userNickName);
+        User tempAdmin = userRepository.findByNickName(adminNickName);
+
+        if(status == "mute"){
+            tempAdmin.adminMuteUser(tempUser);
+        }else{
+            tempAdmin.adminUnmuteUser(tempUser);
+        }
+        userRepository.save(tempUser);
     }
 }
