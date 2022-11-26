@@ -141,6 +141,17 @@ public class AuthController {
         throw new IllegalArgumentException("user is not registered");
     }
 
+    /**
+     * Does the log out process for a logged-in user in our database(When clicking the log out button).
+     *
+     * @param user    - The user we want to log out.
+     * @return Returns a string which consists of a successful log-out message
+     */
+    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    public String logOut(@RequestBody User user) {
+            return authenticationService.logOut(user.getNickName());
+    }
+
     public boolean authUser(String id, String token) {
         if (token.length() != 18) {
             throw new IllegalArgumentException("invalid token");

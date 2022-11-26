@@ -1,14 +1,12 @@
 package chatApp.controller;
-
 import chatApp.Entities.ChatMessage;
-import chatApp.Entities.HelloMessage;
+import chatApp.Entities.SystemMessage;
 import chatApp.Entities.RequestMessage;
 import chatApp.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -26,8 +24,14 @@ public class ChatController {
 
     @MessageMapping("/hello")
     @SendTo("/topic/mainChat")
-    public ChatMessage greeting(HelloMessage message) throws Exception {
-        return new ChatMessage("SYSTEM", message.getName() + " has joined the chat");
+    public ChatMessage greeting(SystemMessage message) throws Exception {
+            return new ChatMessage("SYSTEM", message.getName() + " has joined the chat");
+    }
+
+    @MessageMapping("/bye")
+    @SendTo("/topic/mainChat")
+    public ChatMessage farewell(SystemMessage message) throws Exception {
+        return new ChatMessage("SYSTEM", message.getName() + " has left the chat");
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
