@@ -19,6 +19,7 @@ public class ChatController {
     @MessageMapping("/plain")
     @SendTo("/topic/mainChat")
     public ChatMessage sendPlainMessage(@RequestBody ChatMessage message) {
+        chatService.checkIfMuted(message.getSender());
         return message;
     }
 

@@ -3,10 +3,7 @@ package chatApp.controller;
 import chatApp.Entities.User;
 import chatApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +22,11 @@ public class UserController {
 
     public User getUserByNickname(String nickName){
         return userService.getUserByNickname(nickName);
+    }
+
+    @RequestMapping(value = "/muteUnmute", method = RequestMethod.PATCH)
+    public String muteUnmute(@RequestParam String adminNickName ,@RequestParam String userNickName, @RequestParam String status){
+        userService.muteUnmute(adminNickName,userNickName,status);
+        return String.format("%s is now %sd!",userNickName,status);
     }
 }

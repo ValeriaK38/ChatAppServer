@@ -28,6 +28,10 @@ public class ChatService {
     public ChatMessage addMessage(RequestMessage requestMessage) {
         String sender = userRepository.findByToken(requestMessage.getToken()).getNickName();
 
+        if(userRepository.findByNickName(sender).isMuted()){
+            throw new RuntimeException("You are muted! you cant send messages.");
+        }
+
         ChatMessage chatMessage = new ChatMessage(sender, requestMessage.getContent());
 
         return messageRepository.save(chatMessage);
@@ -37,4 +41,13 @@ public class ChatService {
         return messageRepository.findAll();
     }
 
+    public void checkIfMuted(String sender) {
+        //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
+        if(sender.startsWith("Guest")){
+            sender = sender.replace("Guest-", "");
+        }
+        if(userRepository.findByNickName(sender).isMuted()){
+            throw new RuntimeException("You are muted! you cant send messages.");
+        }
+    }
 }

@@ -162,6 +162,7 @@ public class AuthService {
         guest.setToken(token);
         guest.switchUserStatus(UserStatus.ONLINE);
         guest.setUserType(UserType.GUEST);
+        guest.setMuted(false);
         userRepository.save(guest);
         return res;
     }
