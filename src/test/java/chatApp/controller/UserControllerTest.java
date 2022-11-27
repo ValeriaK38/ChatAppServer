@@ -3,6 +3,7 @@ package chatApp.controller;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
+import chatApp.service.AuthService;
 import chatApp.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +24,7 @@ class UserControllerTest {
     @Autowired
     UserController userController;
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private static UserRepository userRepository;
+    AuthController authController;
 
     private static User mutedUser;
     private static User unmutedUser;
@@ -36,29 +34,51 @@ class UserControllerTest {
 
     @BeforeEach
     public void setup() {
+        //Creates users for the tests and saves them in the database so anyone can run the tests at any time.
+
         users = new ArrayList<>();
-        mutedUser = new User.UserBuilder("muted@muted.com", "1234", "MutedUser").build();
-        unmutedUser = new User.UserBuilder("leon@test.com", "1234", "LeonTest").build();
+
+        mutedUser = new User.UserBuilder("test@test2.com", "leon1234", "test2").build();
+        unmutedUser = new User.UserBuilder("test@test3.com", "leon1234", "test3").build();
         adminUser = new User.UserBuilder("admin@test.com", "1234", "AdminTest").build();
-        adminUser = new User.UserBuilder("admin2@test.com", "1234", "AdminTest2").build();
+        adminUser2 = new User.UserBuilder("admin2@test.com", "1234", "AdminTest2").build();
+
+        adminUser.setUserType(UserType.ADMIN);
+        adminUser2.setUserType(UserType.ADMIN);
+
+        userController.saveUserInDB(mutedUser);
+        userController.saveUserInDB(unmutedUser);
+        userController.saveUserInDB(adminUser);
+        userController.saveUserInDB(adminUser2);
+
         userController.muteUnmute(adminUser.getNickName(),unmutedUser.getNickName(),"unmute");
         userController.muteUnmute(adminUser.getNickName(),mutedUser.getNickName(),"mute");
     }
 
     @AfterEach
     public void cleanup() {
+        //Deletes the users from the DB so when you run the tests again they won't exist.
+
         userController.muteUnmute(adminUser.getNickName(),unmutedUser.getNickName(),"unmute");
         userController.muteUnmute(adminUser.getNickName(),mutedUser.getNickName(),"mute");
+
+        authController.deleteUserByNickname(mutedUser.getNickName());
+        authController.deleteUserByNickname(unmutedUser.getNickName());
+        authController.deleteUserByNickname(adminUser.getNickName());
+        authController.deleteUserByNickname(adminUser2.getNickName());
+
         users = null;
         mutedUser = null;
         unmutedUser = null;
         adminUser = null;
+        adminUser2 = null;
     }
 
 
     @Test
     void Get_All_Users_Successfully() {
         System.out.println("-------- Test pulling all users from database --------");
+
         //Given there are users in the database
 
         //When i try to get the list of all the users
@@ -83,6 +103,7 @@ class UserControllerTest {
         //Then the user is now muted
         User tempUser = userController.getUserByNickname(unmutedUser.getNickName());
         assertEquals(tempUser.isMuted(), true);
+
         System.out.println("The user is muted");
     }
 
@@ -98,6 +119,7 @@ class UserControllerTest {
         //Then the user is unmuted
         User tempUser = userController.getUserByNickname(mutedUser.getNickName());
         assertEquals(tempUser.isMuted(), false);
+
         System.out.println("The user is unmuted:");
     }
 
