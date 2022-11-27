@@ -185,4 +185,9 @@ public class AuthService {
     public boolean checkIfEmailExists(String email) {
         return (userRepository.findByEmail(email) != null);
     }
+
+    public void deleteUserByNickname(String nickName){
+        User user = userRepository.findByNickName(nickName);
+        userRepository.delete(user);
+    }
 }

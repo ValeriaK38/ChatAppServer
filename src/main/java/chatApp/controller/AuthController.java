@@ -50,13 +50,13 @@ public class AuthController {
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
     public String createUser(@RequestBody RequestAddUser request) {
         try {
-            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).profilePhoto(null).build();
-            validateInputUser(user);
+            LocalDate dateTime = null;
             if (request.getDateOfBirth() != null) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate dateTime = LocalDate.parse(request.getDateOfBirth(), formatter);
-                user.setDateOfBirth(dateTime);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                dateTime = LocalDate.parse(request.getDateOfBirth(), formatter);
             }
+            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).build();
+            validateInputUser(user);
             return authenticationService.addUser(user, request.getUrl()).toString();
         } catch (SQLDataException e) {
             System.out.println(e);
@@ -171,5 +171,8 @@ public class AuthController {
     public String createGuest(@RequestBody User guest) {
         User tempGuest = new User.UserBuilder(guest.getNickName()).build();
         return authenticationService.addUGuest(guest);
+    }
+    public void deleteUserByNickname(String nickName){
+         authenticationService.deleteUserByNickname(nickName);
     }
 }
