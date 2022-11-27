@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.SQLDataException;
+import java.util.HashMap;
 
 import static chatApp.utilities.Utilities.createRandomString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,17 +29,16 @@ class AuthControllerTest {
     @Autowired
     private AuthService authService;
     @Autowired
-    private static UserRepository userRepository;
-    @Autowired
     UserController userController;
-    @Autowired
-    private UserService userService;
     private static User testUser;
     private static User testGuest;
     private static User testLogoutUser;
+    RequestAddUser requestTest;
 
     @BeforeEach
     public void setup() {
+        //Creates users for the tests and saves them in the database so anyone can run the tests at any time.
+
         testUser = new User.UserBuilder("test@test1.com", "leon1234", "test1").build();
         testGuest = new User.UserBuilder("testGuest1").build();
         testLogoutUser = new User.UserBuilder("testLogout@test.com", "leon1234", "TestLogout").build();
@@ -49,16 +49,22 @@ class AuthControllerTest {
         userController.saveUserInDB(testGuest);
         userController.saveUserInDB(testLogoutUser);
         authController.logIn(testLogoutUser);
+
+        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
     }
 
     @AfterEach
     public void cleanup() {
-        testUser = null;
-        testGuest = null;
-        authService.userTokens.clear();
+        //Deletes the users from the DB so when you run the tests again they won't exist.
+
         authController.deleteUserByNickname(testUser.getNickName());
         authController.deleteUserByNickname(testGuest.getNickName());
         authController.deleteUserByNickname(testLogoutUser.getNickName());
+        testUser = null;
+        testGuest = null;
+        authService.userTokens.clear();
+
+        requestTest = null;
     }
 
     @Test
@@ -159,7 +165,7 @@ class AuthControllerTest {
     }
 
     @Test
-    public void User_Logs_Out_Successfully(){
+    public void User_Logs_Out_Successfully() {
         System.out.println("-------- Test User logs out successfully --------");
 
         //Given there is a logged in user.
@@ -175,7 +181,7 @@ class AuthControllerTest {
     }
 
     @Test
-    public void Logged_Out_User_Tries_To_Log_Out(){
+    public void Logged_Out_User_Tries_To_Log_Out() {
         System.out.println("-------- Test logged out user tries to log out--------");
         //This should not be possible , only someone who entered the chat can see the logout button but checking just in case.
 
@@ -189,7 +195,7 @@ class AuthControllerTest {
     }
 
     @Test
-    public void Not_Registered_User_Tries_To_Log_Out(){
+    public void Not_Registered_User_Tries_To_Log_Out() {
         System.out.println("-------- Test not registered user tries to log out--------");
         //This should not be possible , only someone who entered the chat can see the logout button but checking just in case.
 
@@ -203,7 +209,7 @@ class AuthControllerTest {
     }
 
     @Test
-    public void Guest_Logs_Out_Successfully(){
+    public void Guest_Logs_Out_Successfully() {
         System.out.println("-------- Test guest logs out successfully --------");
 
         //Given there is a logged in guest.
@@ -219,71 +225,124 @@ class AuthControllerTest {
         System.out.println("The guest was deleted from the database!");
     }
 
+
     @Test
     public void User_AddUser_Successfully() {
         System.out.println("-------- Test user register successfully --------");
-        RequestAddUser request = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
-        String str = authController.createUser(request);
+
+        //Given there is a user who wants to register
+
+        //When he tries to register
+        String str = authController.createUser(requestTest);
+
+        //Then the user is created and added to the DB.
         User resUser = userController.getUserByNickname("Valeria11");
         assertEquals(str, resUser.toString());
-        authController.deleteUserByNickname("Valeria11");
+
+        authController.deleteUserByNickname(requestTest.getNickName());
+
+        System.out.println("The user is now registered!" + resUser);
     }
 
     @Test
     public void User_AddUser_alreadyRegistered() {
         System.out.println("-------- Test user already registered --------");
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
+
+        //Given there is a registered user.
+
+        //When trying to register the same user.
         RequestAddUser request2 = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
-        authController.createUser(request1);
+        authController.createUser(requestTest);
+
+        //Then he fails to register
         assertThrows(Exception.class, () -> authController.createUser(request2));
-        authController.deleteUserByNickname("Valeria11");
+
+        authController.deleteUserByNickname(requestTest.getNickName());
+
+        System.out.println("Cant register with the same details again!");
     }
 
     @Test
     public void User_AddUser_invalidNickName() {
         System.out.println("-------- Test user registration with invalid nickname --------");
+
+        //When trying to register with wrong nickname
         RequestAddUser request1 = new RequestAddUser("Valeria@@@", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
-        assertThrows(Exception.class, () ->  authController.createUser(request1));
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid nickname");
     }
 
     @Test
     public void User_AddUser_invalidPassword() {
         System.out.println("-------- Test user registration with invalid email --------");
+
+        //When trying to register with wrong password
         RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "111", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
-        assertThrows(Exception.class, () ->  authController.createUser(request1));
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid password");
     }
 
     @Test
     public void User_AddUser_invalidFirstName() {
         System.out.println("-------- Test user registration with invalid first name --------");
+
+        //When trying to register with invalid first name
         RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria2", "Krahmalev", "12-04-2000", "description", "url");
-        assertThrows(Exception.class, () ->  authController.createUser(request1));
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid first name");
     }
 
     @Test
     public void User_AddUser_invalidLstName() {
         System.out.println("-------- Test user registration with invalid last name --------");
+
+        //When trying to register with invalid last name
         RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "12-04-2000", "description", "url");
-        assertThrows(Exception.class, () ->  authController.createUser(request1));
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid last name");
     }
 
     @Test
     public void User_ConfirmUserAccount_Successfully() {
         System.out.println("-------- Test user account confirmation success --------");
 
+        //Given there is a registered user.
         RequestAddUser request = new RequestAddUser("Valeria1", "lera38@gmail1.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url");
         authController.createUser(request);
+
+        //When verifying
         User resUser = userController.getUserByNickname("Valeria1");
         System.out.println(resUser.isVerified());
         authController.confirmUserAccount(resUser.getId());
         User updatedUser = userController.getUserByNickname("Valeria1");
-        assertEquals(true,updatedUser.isVerified());
+
+        //Then the user is now verified
+        assertEquals(true, updatedUser.isVerified());
+
         authController.deleteUserByNickname("Valeria1");
+
+        System.out.println("The user is now verified!");
     }
 
     @Test
     public void User_ConfirmUserAccount_NoSuchUser() {
         System.out.println("-------- Test user account confirmation fails - no such user id --------");
-        assertThrows(Exception.class, () ->  authController.confirmUserAccount(-1l));
-        }
+
+        //When trying to verify a none existent user Then it fails
+        assertThrows(Exception.class, () -> authController.confirmUserAccount(-1l));
+
+        System.out.println("Cant verify a none existent user");
     }
+}

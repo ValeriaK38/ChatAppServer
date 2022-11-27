@@ -2,6 +2,7 @@ package chatApp.controller;
 
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.RequestMessage;
+import chatApp.Entities.User;
 import chatApp.repository.MessageRepository;
 import chatApp.service.ChatService;
 import org.junit.jupiter.api.AfterEach;
@@ -23,14 +24,12 @@ class ChatControllerTest {
 
     @Autowired
     ChatController chatController;
-
     @Autowired
-    private ChatService chatService;
-
+    UserController userController;
     @Autowired
-    private static MessageRepository messageRepository;
-
+    AuthController authController;
     List<ChatMessage> messageList;
+    private static User testUser;
 
 
     @BeforeEach
@@ -45,13 +44,17 @@ class ChatControllerTest {
     }
 
 
-    @Test //////////////////////////////// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Needs to be fixed! User register test must be done first
+    @Test
     void Test_Create_Message_Successfully() {
         System.out.println("-------- Test Creating a new message successfully --------");
 
+        testUser = new User.UserBuilder("test@test4.com", "leon1234", "test4").build();
+        userController.saveUserInDB(testUser);
+
         int before_size = chatController.getAllMessages().size();
+
         //Given we have a message we want to create
-        RequestMessage message = new RequestMessage("Leon","Test");
+        RequestMessage message = new RequestMessage(testUser.getToken(),"Test");
 
         //When we create the message
         chatController.createMessage(message);
@@ -60,12 +63,17 @@ class ChatControllerTest {
         int after_size = chatController.getAllMessages().size();
         ChatMessage testMessage = chatController.getAllMessages().get(after_size-1);
         assertEquals((after_size - before_size) , 1);
-        assertTrue(message.getContent() == testMessage.getContent());
+        assertTrue(message.getContent().equals(testMessage.getContent()));
+
+        authController.deleteUserByNickname(testUser.getNickName());
+
+        System.out.println("The message was created successfully and its content is: " + testMessage.getContent());
     }
 
     @Test
-    void testCreateMessage() {
+    void test_Create_Message_With_Invalid_User() {
         System.out.println("-------- Test trying to create a new message with invalid user --------");
+
         //Should not even happen because only registered and online users can try to create a message but checking just in case.
 
         RequestMessage message = new RequestMessage("Leon","Test");
