@@ -47,4 +47,8 @@ public class UserService {
         }
         userRepository.save(tempUser);
     }
+
+    public void saveUserInDB(User user) {
+        userRepository.save(user);
+    }
 }

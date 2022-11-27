@@ -20,13 +20,17 @@ public class UserController {
         return (List<User>) userService.getAllUsers();
     }
 
-    public User getUserByNickname(String nickName){
-        return userService.getUserByNickname(nickName);
-    }
-
     @RequestMapping(value = "/muteUnmute", method = RequestMethod.PATCH)
     public String muteUnmute(@RequestParam String adminNickName ,@RequestParam String userNickName, @RequestParam String status){
         userService.muteUnmute(adminNickName,userNickName,status);
         return String.format("%s is now %sd!",userNickName,status);
+    }
+
+    public void saveUserInDB(User user){
+        userService.saveUserInDB(user);
+    }
+
+    public User getUserByNickname(String nickName){
+        return userService.getUserByNickname(nickName);
     }
 }
