@@ -1,5 +1,6 @@
 package chatApp.controller;
 
+import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
 import chatApp.service.AuthService;
@@ -55,7 +56,14 @@ public class AuthController {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 dateTime = LocalDate.parse(request.getDateOfBirth(), formatter);
             }
-            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).build();
+            String privacyStatusStr = request.getPrivacyStatus();
+            PrivacyStatus privacyStatus;
+            if (privacyStatusStr.equals("PUBLIC")) {
+                privacyStatus = PrivacyStatus.PUBLIC;
+            } else {
+                privacyStatus = PrivacyStatus.PRIVATE;
+            }
+            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
             validateInputUser(user);
             return authenticationService.addUser(user, request.getUrl()).toString();
         } catch (SQLDataException e) {
@@ -115,7 +123,7 @@ public class AuthController {
     /**
      * Does the log in process for a registered user in our database.
      *
-     * @param user    - The user we want to log in.
+     * @param user - The user we want to log in.
      * @return Returns a string which consists of nickName:Token, This helps us in the client to parse the response
      * and save the token and nickname in the session storage for later use.
      * In general the login is supposed to generate a token for the user and set his status to ONLINE.
@@ -144,12 +152,12 @@ public class AuthController {
     /**
      * Does the log out process for a logged-in user in our database(When clicking the log out button).
      *
-     * @param user    - The user we want to log out.
+     * @param user - The user we want to log out.
      * @return Returns a string which consists of a successful log-out message
      */
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     public String logOut(@RequestBody User user) {
-            return authenticationService.logOut(user.getNickName());
+        return authenticationService.logOut(user.getNickName());
     }
 
     public boolean authUser(String id, String token) {
@@ -172,7 +180,8 @@ public class AuthController {
         User tempGuest = new User.UserBuilder(guest.getNickName()).build();
         return authenticationService.addUGuest(guest);
     }
-    public void deleteUserByNickname(String nickName){
-         authenticationService.deleteUserByNickname(nickName);
+
+    public void deleteUserByNickname(String nickName) {
+        authenticationService.deleteUserByNickname(nickName);
     }
 }
