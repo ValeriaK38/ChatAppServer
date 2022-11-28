@@ -1,12 +1,15 @@
 package chatApp.controller;
 
+
 import chatApp.Entities.Enums.UserStatus;
+import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -18,7 +21,8 @@ public class UserController {
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public List<User> getAllUsers() {
-        return (List<User>) userService.getAllUsers();
+        List<User>  users =  userService.getAllUsers();
+        return users.stream().filter( user -> user.isVerified() || user.getUserType() == UserType.GUEST).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/muteUnmute", method = RequestMethod.PATCH)
