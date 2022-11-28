@@ -3,6 +3,7 @@ package chatApp.service;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public class UserService {
      * @return the list of all the users in the database.
      */
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "UserStatus")
+                 .and(Sort.by(Sort.Direction.DESC, "UserType"))
+        );
     }
 
     public User getUserByNickname(String nickName) {
