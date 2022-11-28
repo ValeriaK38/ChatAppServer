@@ -11,10 +11,24 @@ public class RequestAddUser {
     private String description;
     private String url;
 
+    private String privacyStatus;
+
     public RequestAddUser() {
     }
 
-    public RequestAddUser(String nickName, String email, String password, String firstName, String lastName, String dateOfBirth, String description, String url) {
+    /**
+     * Request class to add user from client
+     * @param nickName
+     * @param email
+     * @param password
+     * @param firstName
+     * @param lastName
+     * @param dateOfBirth
+     * @param description
+     * @param url link to verification page
+     * @param privacyStatus
+     */
+    public RequestAddUser(String nickName, String email, String password, String firstName, String lastName, String dateOfBirth, String description, String url, String privacyStatus) {
         this.nickName = nickName;
         this.email = email;
         this.password = password;
@@ -23,10 +37,19 @@ public class RequestAddUser {
         this.dateOfBirth = dateOfBirth;
         this.description = description;
         this.url = url;
+        this. privacyStatus = privacyStatus;
     }
 
     public String getNickName() {
         return nickName;
+    }
+
+    public String getPrivacyStatus() {
+        return privacyStatus;
+    }
+
+    public void setPrivacyStatus(String privacyStatus) {
+        this.privacyStatus = privacyStatus;
     }
 
     public void setNickName(String nickName) {
@@ -97,9 +120,10 @@ public class RequestAddUser {
                 ", password='" + password + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
                 ", description='" + description + '\'' +
                 ", url='" + url + '\'' +
+                ", privacyStatus='" + privacyStatus + '\'' +
                 '}';
     }
 }
