@@ -1,5 +1,6 @@
 package chatApp.service;
 
+import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
@@ -51,6 +52,18 @@ public class UserService {
         userRepository.save(tempUser);
     }
 
+    public UserStatus awayOnline(String nickName) {
+        User tempUser = userRepository.findByNickName(nickName);
+        UserStatus nowStatus= tempUser.getUserStatus();
+        if(nowStatus == UserStatus.ONLINE){
+            tempUser.setUserStatus(UserStatus.AWAY);
+        }
+        else{
+            tempUser.setUserStatus(UserStatus.ONLINE);
+        }
+        userRepository.save(tempUser);
+        return (tempUser.getUserStatus());
+    }
     public void saveUserInDB(User user) {
         userRepository.save(user);
     }

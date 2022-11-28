@@ -1,5 +1,7 @@
 package chatApp.controller;
 
+
+import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.service.UserService;
@@ -27,6 +29,13 @@ public class UserController {
     public String muteUnmute(@RequestParam String adminNickName ,@RequestParam String userNickName, @RequestParam String status){
         userService.muteUnmute(adminNickName,userNickName,status);
         return String.format("%s is now %sd!",userNickName,status);
+    }
+
+    @RequestMapping(value = "/awayOnline", method = RequestMethod.PATCH)
+    public String awayOnline(@RequestParam String nickName){
+
+        UserStatus status = userService.awayOnline(nickName);
+        return String.format("%s changed to %s!",nickName, status.toString());
     }
 
     public void saveUserInDB(User user){
