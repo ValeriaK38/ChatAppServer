@@ -1,6 +1,9 @@
 package chatApp.controller;
 
 import chatApp.Entities.ChatMessage;
+import chatApp.Entities.Enums.PrivacyStatus;
+import chatApp.Entities.Enums.UserStatus;
+import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.RequestMessage;
 import chatApp.Entities.User;
 import chatApp.repository.MessageRepository;
@@ -48,8 +51,12 @@ class ChatControllerTest {
     void Test_Create_Message_Successfully() {
         System.out.println("-------- Test Creating a new message successfully --------");
 
-        testUser = new User.UserBuilder("test@test4.com", "leon1234", "test4").build();
+        testUser = new User.UserBuilder("test@test4.com", "leon1234", "test4").userStatus(UserStatus.OFFLINE)
+                .privacyStatus(PrivacyStatus.PUBLIC).userType(UserType.REGISTERED).build();
+        testUser.setVerified(true);
         userController.saveUserInDB(testUser);
+        authController.logIn(testUser);
+
 
         int before_size = chatController.getAllMessages().size();
 
