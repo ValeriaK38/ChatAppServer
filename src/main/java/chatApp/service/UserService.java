@@ -56,7 +56,7 @@ public class UserService {
             throw new IllegalArgumentException("Only admin can mute or unmute users.");
         }
 
-        if (status == "mute") {
+        if (status.equals("mute")) {
             tempAdmin.adminMuteUser(tempUser);
         } else {
             tempAdmin.adminUnmuteUser(tempUser);
