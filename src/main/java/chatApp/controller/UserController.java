@@ -78,7 +78,7 @@ public class UserController {
      *
      * @param user - The user we wish to save in the DB
      */
-    public void saveUserInDB(User user) {
+    public void saveUserInDB(User user){
         userService.saveUserInDB(user);
     }
 
@@ -86,7 +86,8 @@ public class UserController {
      * @param nickName - The nickname of the user we wish to retrieve.
      * @return the user we wanted to get from the DB
      */
-    public User getUserByNickname(String nickName) {
-        return userService.getUserByNickname(nickName);
+    @RequestMapping(value = "/getUserByNickname", method = RequestMethod.POST)
+    public User getUserByNickname(@RequestBody String userNickName) {
+        return userService.getUserByNickname(userNickName);
     }
 }
