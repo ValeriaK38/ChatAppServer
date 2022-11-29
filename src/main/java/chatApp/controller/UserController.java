@@ -21,28 +21,29 @@ public class UserController {
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public List<User> getAllUsers() {
-        List<User>  users =  userService.getAllUsers();
-        return users.stream().filter( user -> user.isVerified() || user.getUserType() == UserType.GUEST).collect(Collectors.toList());
+        List<User> users = userService.getAllUsers();
+        return users.stream().filter(user -> user.isVerified() || user.getUserType() == UserType.GUEST).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/muteUnmute", method = RequestMethod.PATCH)
-    public String muteUnmute(@RequestParam String adminNickName ,@RequestParam String userNickName, @RequestParam String status){
-        userService.muteUnmute(adminNickName,userNickName,status);
-        return String.format("%s is now %sd!",userNickName,status);
+    public String muteUnmute(@RequestParam String adminNickName, @RequestParam String userNickName, @RequestParam String status) {
+        userService.muteUnmute(adminNickName, userNickName, status);
+        return String.format("%s is now %sd!", userNickName, status);
     }
 
     @RequestMapping(value = "/awayOnline", method = RequestMethod.PATCH)
-    public String awayOnline(@RequestParam String nickName){
+    public String awayOnline(@RequestParam String nickName) {
 
         UserStatus status = userService.awayOnline(nickName);
-        return String.format("%s changed to %s!",nickName, status.toString());
+        return String.format("%s changed to %s!", nickName, status.toString());
     }
 
-    public void saveUserInDB(User user){
+    public void saveUserInDB(User user) {
         userService.saveUserInDB(user);
     }
 
-    public User getUserByNickname(String nickName){
-        return userService.getUserByNickname(nickName);
+    @RequestMapping(value = "/getUserByNickname", method = RequestMethod.POST)
+    public User getUserByNickname(@RequestBody String userNickName) {
+        return userService.getUserByNickname(userNickName);
     }
 }
