@@ -12,6 +12,11 @@ public class VerificationEmailController {
     @Autowired
     private EmailSenderService emailSenderService;
 
+    /**
+     * Sends verification link to the user to activate the account
+     * @param user
+     * @param url
+     */
     public void sendEmail(User user, String url) {
         this.emailSenderService.sendVerificationEmail(user.getEmail(), user.getId(), url);
     }

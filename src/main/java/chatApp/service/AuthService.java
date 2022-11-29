@@ -76,7 +76,7 @@ public class AuthService {
         if (tempUser == null) {
             throw new RuntimeException("The user is not registered in the database");
         }
-        if(!tempUser.isVerified()){
+        if (!tempUser.isVerified()) {
             throw new IllegalStateException("The user is not verified. please check your email and activate your account");
         }
         if (!tempUser.getEmail().equals(email)) {
@@ -101,28 +101,28 @@ public class AuthService {
     /**
      * Does the log out process for a logged-in user in our database(When clicking the log out button).
      *
-     * @param nickName    - The nickname of the user we want to log out.
+     * @param nickName - The nickname of the user we want to log out.
      * @return Returns a string which consists of a successful log-out message
      */
     public String logOut(String nickName) {
 
         //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
-        if(nickName.startsWith("Guest")){
+        if (nickName.startsWith("Guest")) {
             nickName = nickName.replace("Guest-", "");
         }
 
         User tempUser = userRepository.findByNickName(nickName);
         userTokens.remove(nickName);
 
-        if(tempUser.getUserStatus() == UserStatus.OFFLINE){
+        if (tempUser.getUserStatus() == UserStatus.OFFLINE) {
             throw new IllegalStateException("The user is already offline! cant log out again");
         }
 
-        if(!(tempUser.getUserType() == UserType.GUEST)){
+        if (!(tempUser.getUserType() == UserType.GUEST)) {
             tempUser.setUserStatus(UserStatus.OFFLINE);
             tempUser.setToken(null);
             userRepository.save(tempUser);
-        }else{
+        } else {
             userRepository.delete(tempUser);
         }
         return "The user logged out successfully";
@@ -186,7 +186,12 @@ public class AuthService {
         return (userRepository.findByEmail(email) != null);
     }
 
-    public void deleteUserByNickname(String nickName){
+    /**
+     * Deletes the user from database by nickname
+     *
+     * @param nickName
+     */
+    public void deleteUserByNickname(String nickName) {
         User user = userRepository.findByNickName(nickName);
         userRepository.delete(user);
     }
