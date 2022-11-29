@@ -384,4 +384,35 @@ class AuthControllerTest {
 
         System.out.println("Cant verify a none existent user");
     }
+
+    @Test
+    public void Delete_User_Successfully() {
+        System.out.println("-------- Test delete user successfully  --------");
+
+        //Given there is a user in the DB.
+        User testDeleteUser = new User.UserBuilder("test@test5.com", "leon1234", "test5").build();
+        userController.saveUserInDB(testDeleteUser);
+
+        //When I try to delete him
+        authController.deleteUserByNickname(testDeleteUser.getNickName());
+
+        //Then the user is no longer in the DW
+        assertNull(userController.getUserByNickname(testDeleteUser.getNickName()));
+
+        System.out.println("The user was deleted successfully");
+    }
+
+    @Test
+    public void TesT_Try_To_Delete_User_That_Does_Not_Exist() {
+        System.out.println("-------- Test trying to delete a user who is not in the DB --------");
+
+        //Given the user we want to delete does not exist in the DB.
+
+        User testDeleteUser = new User.UserBuilder("test@test6.com", "leon1234", "test6").build();
+
+        //When I try to delete him Then it fails
+        assertThrows(Exception.class, () -> authController.deleteUserByNickname(testDeleteUser.getNickName()));
+
+        System.out.println("The user was not found in the DB, cant delete someone who does not exist.");
+    }
 }

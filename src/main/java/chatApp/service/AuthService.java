@@ -20,11 +20,9 @@ public class AuthService {
     private final UserRepository userRepository;
     @Autowired
     VerificationEmailController verificationEmailController;
-
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     public static HashMap<String, String> userTokens = new HashMap<>();
 
     /**
@@ -131,15 +129,6 @@ public class AuthService {
         return "The user logged out successfully";
     }
 
-    public boolean authUser(String id, String token) {
-        for (HashMap.Entry<String, String> entry : userTokens.entrySet()) {
-            if (entry.getKey().equals(id)) {
-                return entry.getValue().equals(token);
-            }
-        }
-        return false;
-    }
-
     /**
      * Allows a user to enter a nickName which must be unique and enter the main chatroom.
      *
@@ -193,7 +182,7 @@ public class AuthService {
     /**
      * Deletes the user from database by nickname
      *
-     * @param nickName
+     * @param nickName - The nickname of the user we want to delete
      */
     public void deleteUserByNickname(String nickName) {
         User user = userRepository.findByNickName(nickName);

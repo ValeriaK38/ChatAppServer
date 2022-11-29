@@ -14,9 +14,10 @@ public class EmailSenderService {
 
     /**
      * Created custom url based on user's id and sends verification email with link to activate the account
+     *
      * @param destinationEmail - user's email
-     * @param id - user's id number
-     * @param url - activation link url
+     * @param id               - user's id number
+     * @param url              - activation link url
      */
     public void sendVerificationEmail(String destinationEmail, Long id, String url) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();

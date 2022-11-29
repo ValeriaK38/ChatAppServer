@@ -186,12 +186,6 @@ public class AuthController {
         return authenticationService.logOut(user.getNickName());
     }
 
-    public boolean authUser(String id, String token) {
-        if (token.length() != 18) {
-            throw new IllegalArgumentException("invalid token");
-        }
-        return authenticationService.authUser(id, token);
-    }
 
     /**
      * Allows a user to enter a nickName which must be unique and enter the main chatroom.
@@ -207,6 +201,11 @@ public class AuthController {
         return authenticationService.addUGuest(guest);
     }
 
+    /**
+     * Deletes the user from database by nickname
+     *
+     * @param nickName - The nickname of the user we want to delete
+     */
     public void deleteUserByNickname(String nickName) {
         authenticationService.deleteUserByNickname(nickName);
     }
