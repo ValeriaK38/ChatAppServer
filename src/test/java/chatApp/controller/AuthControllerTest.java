@@ -332,7 +332,7 @@ class AuthControllerTest {
         System.out.println("-------- Test user registration with invalid month in date of birth --------");
 
         //When trying to register with invalid year
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-15-12", "description", "url", "PUBLIC");
+        RequestAddUser request1 = new RequestAddUser("Valeria15", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-15-12", "description", "url", "PUBLIC");
 
         //Then the registration fails
         assertThrows(Exception.class, () -> authController.createUser(request1));

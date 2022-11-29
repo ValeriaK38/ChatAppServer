@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLDataException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 
 import static chatApp.utilities.Utilities.createRandomString;
@@ -94,6 +96,7 @@ public class AuthService {
         String res = tempUser.getNickName() + ":" + token;
         tempUser.setToken(token);
         tempUser.switchUserStatus(UserStatus.ONLINE);
+        tempUser.setLast_Loggedin(Timestamp.from(Instant.now()));
         userRepository.save(tempUser);
         return res;
     }
@@ -163,6 +166,7 @@ public class AuthService {
         guest.switchUserStatus(UserStatus.ONLINE);
         guest.setUserType(UserType.GUEST);
         guest.setMuted(false);
+        guest.setLast_Loggedin(Timestamp.from(Instant.now()));
         userRepository.save(guest);
         return res;
     }
