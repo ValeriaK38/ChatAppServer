@@ -50,7 +50,7 @@ class AuthControllerTest {
         userController.saveUserInDB(testLogoutUser);
         authController.logIn(testLogoutUser);
 
-        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url", "PUBLIC");
+        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
     }
 
     @AfterEach
@@ -251,7 +251,7 @@ class AuthControllerTest {
         //Given there is a registered user.
 
         //When trying to register the same user.
-        RequestAddUser request2 = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url", "PUBLIC");
+        RequestAddUser request2 = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
         authController.createUser(requestTest);
 
         //Then he fails to register
@@ -267,7 +267,7 @@ class AuthControllerTest {
         System.out.println("-------- Test user registration with invalid nickname --------");
 
         //When trying to register with wrong nickname
-        RequestAddUser request1 = new RequestAddUser("Valeria@@@", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url", "PUBLIC");
+        RequestAddUser request1 = new RequestAddUser("Valeria@@@", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
 
         //Then the registration fails
         assertThrows(Exception.class, () -> authController.createUser(request1));
@@ -280,7 +280,7 @@ class AuthControllerTest {
         System.out.println("-------- Test user registration with invalid email --------");
 
         //When trying to register with wrong password
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "111", "Valeria", "Krahmalev", "12-04-2000", "description", "url", "PUBLIC");
+        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "111", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
 
         //Then the registration fails
         assertThrows(Exception.class, () -> authController.createUser(request1));
@@ -293,7 +293,7 @@ class AuthControllerTest {
         System.out.println("-------- Test user registration with invalid first name --------");
 
         //When trying to register with invalid first name
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria2", "Krahmalev", "12-04-2000", "description", "url", "PUBLIC");
+        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria2", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
 
         //Then the registration fails
         assertThrows(Exception.class, () -> authController.createUser(request1));
@@ -306,7 +306,7 @@ class AuthControllerTest {
         System.out.println("-------- Test user registration with invalid last name --------");
 
         //When trying to register with invalid last name
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "12-04-2000", "description", "url", "PUBLIC");
+        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-03-02", "description", "url", "PUBLIC");
 
         //Then the registration fails
         assertThrows(Exception.class, () -> authController.createUser(request1));
@@ -315,11 +315,50 @@ class AuthControllerTest {
     }
 
     @Test
+    public void User_AddUser_invalidDateOfBirthYear() {
+        System.out.println("-------- Test user registration with invalid year in date of birth --------");
+
+        //When trying to register with invalid year
+        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-12-12", "description", "url", "PUBLIC");
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid year value in date of birth");
+    }
+
+    @Test
+    public void User_AddUser_invalidDateOfBirthMonth() {
+        System.out.println("-------- Test user registration with invalid month in date of birth --------");
+
+        //When trying to register with invalid year
+        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-15-12", "description", "url", "PUBLIC");
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid month value in date of birth");
+    }
+
+    @Test
+    public void User_AddUser_invalidDateOfBirthDay() {
+        System.out.println("-------- Test user registration with invalid day in date of birth --------");
+
+        //When trying to register with invalid year
+        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-12-40", "description", "url", "PUBLIC");
+
+        //Then the registration fails
+        assertThrows(Exception.class, () -> authController.createUser(request1));
+
+        System.out.println("Cant register with an invalid day value in date of birth");
+    }
+
+    @Test
     public void User_ConfirmUserAccount_Successfully() {
         System.out.println("-------- Test user account confirmation success --------");
 
         //Given there is a registered user.
-        RequestAddUser request = new RequestAddUser("Valeria1", "lera38@gmail1.com", "080393Lera", "Valeria", "Krahmalev", "12-04-2000", "description", "url", "PUBLIC");
+        RequestAddUser request = new RequestAddUser("Valeria1", "lera38@gmail1.com", "080393Lera", "Valeria", "Krahmalev", "2000-12-03", "description", "url", "PUBLIC");
         authController.createUser(request);
 
         //When verifying
