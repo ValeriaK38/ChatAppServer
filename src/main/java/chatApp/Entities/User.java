@@ -5,6 +5,7 @@ import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import com.sun.istack.NotNull;
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -46,7 +47,8 @@ public class User {
     private String token;
     @Column(name = "is_verified")
     private boolean isVerified;
-
+    @Column(name = "last_loggedin")
+    private Timestamp last_Loggedin;
 
     public User() {
     }
@@ -166,6 +168,14 @@ public class User {
     public void setToken(String token) {
         this.token = token;
 
+    }
+
+    public Timestamp getLast_Loggedin() {
+        return last_Loggedin;
+    }
+
+    public void setLast_Loggedin(Timestamp last_Loggedin) {
+        this.last_Loggedin = last_Loggedin;
     }
 
     public void adminMuteUser(User user) {
