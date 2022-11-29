@@ -38,6 +38,17 @@ public class UserController {
         return String.format("%s changed to %s!",nickName, status.toString());
     }
 
+    @RequestMapping(value = "/keepAlive", method = RequestMethod.POST)
+    public void keepAlive(@RequestBody String userNickname) {
+        userService.keepAlive(userNickname);
+    }
+
+    @RequestMapping(value = "/checkOfflineUsers", method = RequestMethod.GET)
+    public void checkOfflineUsers(){
+        userService.checkOfflineUsers();
+    }
+
+
     public void saveUserInDB(User user){
         userService.saveUserInDB(user);
     }
