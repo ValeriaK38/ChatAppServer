@@ -5,6 +5,7 @@ import chatApp.Entities.RequestMessage;
 import chatApp.Entities.User;
 import chatApp.repository.MessageRepository;
 import chatApp.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class ChatService {
         return messageRepository.save(chatMessage);
     }
 
-    public List<ChatMessage> getAllMesseges() {
+    public List<ChatMessage> getAllMessages() {
         return messageRepository.findAll();
     }
 
@@ -50,4 +51,6 @@ public class ChatService {
             throw new RuntimeException("You are muted! you cant send messages.");
         }
     }
+
+
 }
