@@ -4,6 +4,7 @@ import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import com.sun.istack.NotNull;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;

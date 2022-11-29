@@ -14,6 +14,7 @@ public class VerificationEmailController {
 
     /**
      * Sends verification link to the user to activate the account
+     *
      * @param user
      * @param url
      */

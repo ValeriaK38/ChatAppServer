@@ -18,10 +18,8 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     ChatController chatController;
 
@@ -38,10 +36,22 @@ public class UserService {
         );
     }
 
+    /**
+     * @param nickName - The nickname of the user we wish to retrieve.
+     * @return the user we wanted to get from the DB
+     */
     public User getUserByNickname(String nickName) {
         return userRepository.findByNickName(nickName);
     }
 
+    /**
+     * The function mutes or unmutes a user , Only an admin can mute a user , the muted/unmuted user must not be
+     * an admin himself.
+     *
+     * @param adminNickName - The nickname of the admin that wishes to mute someone.
+     * @param userNickName- The nickname of the user the admin wishes to mute.
+     * @param status        - Can be either "mute" or "unmute" to know which action to take.
+     */
     public void muteUnmute(String adminNickName, String userNickName, String status) {
         User tempUser = userRepository.findByNickName(userNickName);
         User tempAdmin = userRepository.findByNickName(adminNickName);
@@ -64,6 +74,12 @@ public class UserService {
         userRepository.save(tempUser);
     }
 
+    /**
+     * Switches the status of a user from online to away or from away to online
+     *
+     * @param nickName - The nickname of the user we wish to switch his status
+     * @return a message of the successful switch.
+     */
     public UserStatus awayOnline(String nickName) {
         User tempUser = userRepository.findByNickName(nickName);
         UserStatus nowStatus = tempUser.getUserStatus();
@@ -76,12 +92,23 @@ public class UserService {
         return (tempUser.getUserStatus());
     }
 
+    /**
+     * Saves one user in the DB
+     *
+     * @param user - The user we wish to save in the DB
+     */
     public void saveUserInDB(User user) {
         userRepository.save(user);
     }
 
+    /**
+     * A method which updates a timestamp of users who are still in our chat to make sure they did not leave without
+     * pressing the logout button
+     *
+     * @param userNickname - The nickname of the user who's still in the chat
+     */
     public void keepAlive(String userNickname) {
-        if(userNickname.startsWith("Guest")){
+        if (userNickname.startsWith("Guest")) {
             userNickname = userNickname.replace("Guest-", "");
         }
         Timestamp now = Timestamp.from(Instant.now());
@@ -92,7 +119,10 @@ public class UserService {
         }
     }
 
-    public void checkOfflineUsers(){
+    /**
+     * Goes over the list of users in the DB and logs off users who did not pass a keepalive check in the past minute
+     */
+    public void checkOfflineUsers() {
         Timestamp now = Timestamp.from(Instant.now());
 
         List<User> users = getAllUsers();

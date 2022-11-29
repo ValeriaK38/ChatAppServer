@@ -18,6 +18,7 @@ public class RequestAddUser {
 
     /**
      * Request class to add user from client
+     *
      * @param nickName
      * @param email
      * @param password
@@ -25,7 +26,7 @@ public class RequestAddUser {
      * @param lastName
      * @param dateOfBirth
      * @param description
-     * @param url link to verification page
+     * @param url           link to verification page
      * @param privacyStatus
      */
     public RequestAddUser(String nickName, String email, String password, String firstName, String lastName, String dateOfBirth, String description, String url, String privacyStatus) {
@@ -37,7 +38,7 @@ public class RequestAddUser {
         this.dateOfBirth = dateOfBirth;
         this.description = description;
         this.url = url;
-        this. privacyStatus = privacyStatus;
+        this.privacyStatus = privacyStatus;
     }
 
     public String getNickName() {

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -257,4 +258,66 @@ class UserControllerTest {
         assertEquals(UserStatus.ONLINE , user.getUserStatus());
         authController.deleteUserByNickname(user.getNickName());
     }
+
+    @Test
+    public void keepAlive_Success() {
+        System.out.println("-------- Test the keep alive method --------");
+
+        //Given there is a user in the DB
+        Timestamp before = unmutedUser.getLast_Loggedin();
+
+        //When we call the keep alive method on the user
+        userController.keepAlive(unmutedUser.getNickName());
+
+        //Then the timestamp of last log in has changed
+        User tempUser = userController.getUserByNickname(unmutedUser.getNickName());
+
+        assertNotEquals(tempUser.getLast_Loggedin() , before);
+
+        System.out.println("The user timestamp has changed");
+    }
+
+    @Test
+    public void keepAlive_With_A_User_That_Does_Not_Exist() {
+        System.out.println("-------- Test the keep alive method on someone who's not in the DB --------");
+
+        //Given the user we want to keep alive is not in the DB
+        User newUser = new User();
+        newUser.setNickName("Test!");
+
+        //When we call the keep alive method on the user
+         userController.keepAlive(newUser.getNickName());
+
+        //Then it fails
+        assertNull(newUser.getLast_Loggedin());
+        System.out.println("Cant keep alive someone who is not in the DB");
+    }
+
+    @Test
+    public void Get_User_By_Nickname_Successfully() {
+        System.out.println("-------- Test get user by nickname successfully --------");
+
+        //Given there is a user in the DB
+
+        //When we try to get the user from the DB
+        User newUser = userController.getUserByNickname(unmutedUser.getNickName());
+
+        //Then we get the user from the DB
+        assertEquals(newUser.getNickName() , unmutedUser.getNickName());
+
+        System.out.println("We got the user from the DB successfully and the user is \n" + newUser);
+    }
+
+    @Test
+    public void Test_Try_To_Get_User_By_Nickname_Who_Is_Not_In_The_DB() {
+        System.out.println("-------- Test trying to get a user who is not in the DB --------");
+
+        //Given the user we want to get is not in the DB
+
+        //When we try to get the user from the DB Then we get nothing from the DB
+        assertNull(userController.getUserByNickname("Not in DB Test User"));
+
+        System.out.println("Cant retrieve user who is not in the DB!");
+    }
+
 }

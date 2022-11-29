@@ -6,5 +6,4 @@ public class Utilities {
     public static String createRandomString(int length){
         return RandomString.make(length);
     }
-
 }
