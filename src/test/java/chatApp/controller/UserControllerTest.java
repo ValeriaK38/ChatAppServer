@@ -1,5 +1,6 @@
 package chatApp.controller;
 
+import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
@@ -227,5 +228,33 @@ class UserControllerTest {
                 ,"unmute"));
 
         System.out.println("Admin cant unmute himself");
+    }
+
+    @Test
+    void changeStatusToAway() {
+        System.out.println("-------- Test Online user change status to away --------");
+
+        User testUser = new User.UserBuilder("test@test1.com", "leon1234", "test1").build();
+        testUser.setVerified(true);
+        testUser.setUserStatus(UserStatus.ONLINE);
+        userController.saveUserInDB(testUser);
+        userController.awayOnline(testUser.getNickName());
+        User user = userController.getUserByNickname(testUser.getNickName());
+        assertEquals(UserStatus.AWAY , user.getUserStatus());
+        authController.deleteUserByNickname(user.getNickName());
+    }
+
+    @Test
+    void changeStatusToOnline() {
+        System.out.println("-------- Test Online user change status to away --------");
+
+        User testUser = new User.UserBuilder("test@test1.com", "leon1234", "test1").build();
+        testUser.setVerified(true);
+        testUser.setUserStatus(UserStatus.AWAY);
+        userController.saveUserInDB(testUser);
+        userController.awayOnline(testUser.getNickName());
+        User user = userController.getUserByNickname(testUser.getNickName());
+        assertEquals(UserStatus.ONLINE , user.getUserStatus());
+        authController.deleteUserByNickname(user.getNickName());
     }
 }
