@@ -22,7 +22,7 @@ public class UserService {
      */
     public List<User> getAllUsers() {
          return userRepository.findAll(Sort.by(Sort.Direction.ASC, "UserStatus")
-                 .and(Sort.by(Sort.Direction.DESC, "UserType"))
+                 .and(Sort.by(Sort.Direction.ASC, "UserType"))
         );
     }
 
