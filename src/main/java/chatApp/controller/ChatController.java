@@ -83,8 +83,23 @@ public class ChatController {
      */
     @RequestMapping(value = "/getLatest", method = RequestMethod.GET)
     public List<ChatMessage> getLatest() {
-        final int COUNT_MESSAGES_TO_SHOW = 40;
+         int numberOfMessagesToShow = 20;
         List<ChatMessage> messages = chatService.getAllMessages();
-        return messages.subList(messages.size() - COUNT_MESSAGES_TO_SHOW, messages.size());
+        if(messages.size() > numberOfMessagesToShow)
+        return messages.subList(messages.size() - numberOfMessagesToShow, messages.size());
+        else return messages;
+    }
+
+
+    @RequestMapping(value = "/getLatestChunks", method = RequestMethod.GET)
+    public List<ChatMessage> getLatestChunks(@RequestParam int chunks) {
+        List<ChatMessage> messages = chatService.getAllMessages();
+        int numberOfMessagesToShow = 20 * chunks;
+        if(messages.size() > 20 && numberOfMessagesToShow < messages.size())
+            return messages.subList(messages.size() - numberOfMessagesToShow, messages.size());
+        else if(messages.size() < 20)
+            return messages;
+        else throw new RuntimeException("No more messages");
+
     }
 }
