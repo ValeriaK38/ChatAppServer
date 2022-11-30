@@ -6,17 +6,17 @@ import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
 import chatApp.repository.UserRepository;
 import chatApp.service.AuthService;
-import chatApp.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLDataException;
-import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 import static chatApp.utilities.Utilities.createRandomString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -246,144 +246,170 @@ class AuthControllerTest {
     }
 
     @Test
-    public void User_AddUser_alreadyRegistered() {
-        System.out.println("-------- Test user already registered --------");
+    public void User_AddUser_alreadyRegisteredEmail() {
+        System.out.println("-------- Test user already registered with email --------");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //Given there is a user who wants to register with the same email as registered testUser
+                    RequestAddUser request = new RequestAddUser("test11", testUser.getEmail(), testUser.getPassword(), "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
+                    //When the user try to register - exception is thrown
+                    authController.createUser(request);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("Email " + testUser.getEmail() + " exists in user table"));
+    }
 
-        //Given there is a registered user.
-
-        //When trying to register the same user.
-        RequestAddUser request2 = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
-        authController.createUser(requestTest);
-
-        //Then he fails to register
-        assertThrows(Exception.class, () -> authController.createUser(request2));
-
-        authController.deleteUserByNickname(requestTest.getNickName());
-
-        System.out.println("Cant register with the same details again!");
+    @Test
+    public void User_AddUser_alreadyRegisteredNickname() {
+        System.out.println("-------- Test user already registered with nickname --------");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //Given there is a user who wants to register with the same nickname as registered testUser
+                    RequestAddUser request = new RequestAddUser(testUser.getNickName(), "lera777@walla1.com", testUser.getPassword(), "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
+                    //When the user try to register - exception is thrown
+                    authController.createUser(request);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("Nickname " + testUser.getNickName() + " exists in user table"));
     }
 
     @Test
     public void User_AddUser_invalidNickName() {
         System.out.println("-------- Test user registration with invalid nickname --------");
-
-        //When trying to register with wrong nickname
-        RequestAddUser request1 = new RequestAddUser("Valeria@@@", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
-
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
-
-        System.out.println("Cant register with an invalid nickname");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //When trying to register with wrong nickname
+                    requestTest.setNickName("Valeria@@@");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid nickname: use A-z/a-z/0-9"));
     }
 
     @Test
     public void User_AddUser_invalidPassword() {
         System.out.println("-------- Test user registration with invalid email --------");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //When trying to register with wrong password
+                    requestTest.setPassword("111");
 
-        //When trying to register with wrong password
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "111", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
-
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
-
-        System.out.println("Cant register with an invalid password");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid password: need to be at lest 8 characters long, and contain numbers and letters"));
     }
 
     @Test
     public void User_AddUser_invalidFirstName() {
         System.out.println("-------- Test user registration with invalid first name --------");
-
-        //When trying to register with invalid first name
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria2", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
-
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
-
-        System.out.println("Cant register with an invalid first name");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //When trying to register with invalid first name
+                    requestTest.setFirstName("Valeria2");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid first name: use A-Za-Z"));
     }
 
     @Test
     public void User_AddUser_invalidLstName() {
         System.out.println("-------- Test user registration with invalid last name --------");
 
-        //When trying to register with invalid last name
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-03-02", "description", "url", "PUBLIC");
-
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
-
-        System.out.println("Cant register with an invalid last name");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //When trying to register with invalid last name
+                    requestTest.setLastName("Krahmalev11");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid last name: use A-Za-Z"));
     }
 
     @Test
     public void User_AddUser_invalidDateOfBirthYear() {
         System.out.println("-------- Test user registration with invalid year in date of birth --------");
 
-        //When trying to register with invalid year
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-12-12", "description", "url", "PUBLIC");
-
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
-
-        System.out.println("Cant register with an invalid year value in date of birth");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //When trying to register with invalid year
+                    requestTest.setDateOfBirth("999-12-12");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid year value:  should be in range of 1900-2022"));
     }
 
     @Test
     public void User_AddUser_invalidDateOfBirthMonth() {
         System.out.println("-------- Test user registration with invalid month in date of birth --------");
 
-        //When trying to register with invalid year
-        RequestAddUser request1 = new RequestAddUser("Valeria15", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-15-12", "description", "url", "PUBLIC");
-
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
-
-        System.out.println("Cant register with an invalid month value in date of birth");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
+                    //When trying to register with invalid month
+                    requestTest.setDateOfBirth("2000-15-12");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid month value:  should be in range of 1-12"));
     }
 
     @Test
     public void User_AddUser_invalidDateOfBirthDay() {
         System.out.println("-------- Test user registration with invalid day in date of birth --------");
 
-        //When trying to register with invalid year
-        RequestAddUser request1 = new RequestAddUser("Valeria11", "lera38", "080393Lera", "Valeria", "Krahmalev2", "2000-12-40", "description", "url", "PUBLIC");
+        ResponseStatusException thrown = assertThrows(
+                ResponseStatusException.class,
+                () -> {
 
-        //Then the registration fails
-        assertThrows(Exception.class, () -> authController.createUser(request1));
+                    //When trying to register with invalid day
+                    requestTest.setDateOfBirth("2000-12-40");
 
-        System.out.println("Cant register with an invalid day value in date of birth");
+                    //Then the registration fails
+                    authController.createUser(requestTest);
+                }
+        );
+        assertTrue(thrown.getMessage().contains("invalid day value:  should be in range of 1-31"));
     }
 
     @Test
     public void User_ConfirmUserAccount_Successfully() {
         System.out.println("-------- Test user account confirmation success --------");
 
-        //Given there is a registered user.
-        RequestAddUser request = new RequestAddUser("Valeria1", "lera38@gmail1.com", "080393Lera", "Valeria", "Krahmalev", "2000-12-03", "description", "url", "PUBLIC");
-        authController.createUser(request);
 
-        //When verifying
-        UserToPresent resUser = userController.getUserByNickname("Valeria1");
-        System.out.println(resUser.isVerified());
+        //Given there is a registered unverified user.
+        testUser.setVerified(false);
+        //When verifying we need to send user
+        User resUser = userController.getUserByNickname(testUser.getNickName());
         authController.confirmUserAccount(resUser.getId());
-        UserToPresent updatedUser = userController.getUserByNickname("Valeria1");
-
+        User updatedUser = userController.getUserByNickname(testUser.getNickName());
         //Then the user is now verified
         assertEquals(true, updatedUser.isVerified());
-
-        authController.deleteUserByNickname("Valeria1");
-
-        System.out.println("The user is now verified!");
     }
 
     @Test
     public void User_ConfirmUserAccount_NoSuchUser() {
         System.out.println("-------- Test user account confirmation fails - no such user id --------");
-
-        //When trying to verify a none existent user Then it fails
-        assertThrows(Exception.class, () -> authController.confirmUserAccount(-1l));
-
-        System.out.println("Cant verify a none existent user");
+        NoSuchElementException thrown = assertThrows(
+                NoSuchElementException.class,
+                () -> authController.confirmUserAccount(-1l)
+        );
+        assertTrue(thrown.getMessage().contains("No value present"));
     }
 
     @Test
@@ -404,16 +430,16 @@ class AuthControllerTest {
     }
 
     @Test
-    public void TesT_Try_To_Delete_User_That_Does_Not_Exist() {
+    public void TesT_Try_To_DeleteUserByNickname_That_Does_Not_Exist() {
         System.out.println("-------- Test trying to delete a user who is not in the DB --------");
-
-        //Given the user we want to delete does not exist in the DB.
-
-        User testDeleteUser = new User.UserBuilder("test@test6.com", "leon1234", "test6").build();
-
-        //When I try to delete him Then it fails
-        assertThrows(Exception.class, () -> authController.deleteUserByNickname(testDeleteUser.getNickName()));
-
-        System.out.println("The user was not found in the DB, cant delete someone who does not exist.");
+        InvalidDataAccessApiUsageException thrown = assertThrows(
+                InvalidDataAccessApiUsageException.class,
+                () -> {
+                    //When I try to delete user that doesn't exist in the database - Then it fails
+                    authController.deleteUserByNickname("-1"); // no such nickname - illegal nickname
+                }
+        );
+        assertTrue(thrown.getMessage().contains("Entity must not be null!"));
     }
+
 }

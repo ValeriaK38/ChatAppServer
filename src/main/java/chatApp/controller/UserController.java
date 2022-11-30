@@ -84,7 +84,7 @@ public class UserController {
     }
 
     /**
-     * @param nickName - The nickname of the user we wish to retrieve.
+     * @param userNickName - The nickname of the user we wish to retrieve.
      * @return the user we wanted to get from the DB
      */
     @RequestMapping(value = "/getUserByNickname", method = RequestMethod.POST)

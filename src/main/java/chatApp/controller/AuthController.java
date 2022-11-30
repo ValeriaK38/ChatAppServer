@@ -51,7 +51,6 @@ public class AuthController {
      */
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
     public String createUser(@RequestBody RequestAddUser request) {
-        System.out.println(request);
         try {
             LocalDate dateTime = null;
             if (request.getDateOfBirth() != null) {
@@ -66,7 +65,7 @@ public class AuthController {
             } else {
                 privacyStatus = PrivacyStatus.PRIVATE;
             }
-            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
+            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
             validateInputUser(user);
             return authenticationService.addUser(user, request.getUrl()).toString();
         } catch (SQLDataException e) {
