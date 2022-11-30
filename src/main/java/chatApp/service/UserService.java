@@ -53,7 +53,10 @@ public class UserService {
      */
     public UserToPresent getUserByNickname(String nickName) {
         User tempUser = userRepository.findByNickName(nickName);
-        UserToPresent userToPresent = new UserToPresent(tempUser);
+        UserToPresent userToPresent = null;
+        if(tempUser != null){
+             userToPresent = new UserToPresent(tempUser);
+        }
         return userToPresent;
     }
 
