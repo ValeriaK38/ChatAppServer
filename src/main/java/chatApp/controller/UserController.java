@@ -4,6 +4,7 @@ package chatApp.controller;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
+import chatApp.Entities.UserToPresent;
 import chatApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,8 @@ public class UserController {
      * @return the list of all the users in the database.
      */
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-    public List<User> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public List<UserToPresent> getAllUsers() {
+        List<UserToPresent> users = userService.getAllUsers();
         return users.stream().filter(user -> user.isVerified() || user.getUserType() == UserType.GUEST).collect(Collectors.toList());
     }
 
@@ -87,7 +88,7 @@ public class UserController {
      * @return the user we wanted to get from the DB
      */
     @RequestMapping(value = "/getUserByNickname", method = RequestMethod.POST)
-    public User getUserByNickname(@RequestBody String userNickName) {
+    public UserToPresent getUserByNickname(@RequestBody String userNickName) {
         return userService.getUserByNickname(userNickName);
     }
 }

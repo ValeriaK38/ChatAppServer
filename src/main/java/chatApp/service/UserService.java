@@ -5,6 +5,7 @@ import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.SystemMessage;
 import chatApp.Entities.User;
+import chatApp.Entities.UserToPresent;
 import chatApp.controller.ChatController;
 import chatApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -30,18 +33,28 @@ public class UserService {
     /**
      * @return the list of all the users in the database.
      */
-    public List<User> getAllUsers() {
-        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "UserStatus")
-                .and(Sort.by(Sort.Direction.ASC, "UserType"))
-        );
+    public List<UserToPresent> getAllUsers() {
+        List<User> users = userRepository.findAll(Sort.by(Sort.Direction.ASC, "UserStatus")
+                .and(Sort.by(Sort.Direction.ASC, "UserType")));
+
+        List<UserToPresent> userToPresent = new ArrayList<>();
+
+        for (User user:users) {
+            UserToPresent tempUser = new UserToPresent(user);
+            userToPresent.add(tempUser);
+        }
+
+        return userToPresent;
     }
 
     /**
      * @param nickName - The nickname of the user we wish to retrieve.
      * @return the user we wanted to get from the DB
      */
-    public User getUserByNickname(String nickName) {
-        return userRepository.findByNickName(nickName);
+    public UserToPresent getUserByNickname(String nickName) {
+        User tempUser = userRepository.findByNickName(nickName);
+        UserToPresent userToPresent = new UserToPresent(tempUser);
+        return userToPresent;
     }
 
     /**
@@ -125,7 +138,7 @@ public class UserService {
     public void checkOfflineUsers() {
         Timestamp now = Timestamp.from(Instant.now());
 
-        List<User> users = getAllUsers();
+        List<User> users = getAllOnlineUsers();
 
         for (User tempUser : users) {
             if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) / (60 * 1000) >= 1) {
@@ -134,5 +147,14 @@ public class UserService {
                 }
             }
         }
+    }
+
+    /**
+     * @return the list of all the online users in the database.
+     */
+    public List<User> getAllOnlineUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().filter(user -> user.getUserStatus() == UserStatus.ONLINE ||
+                user.getUserStatus() == UserStatus.AWAY).collect(Collectors.toList());
     }
 }

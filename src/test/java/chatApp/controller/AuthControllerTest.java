@@ -3,6 +3,7 @@ package chatApp.controller;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
+import chatApp.Entities.UserToPresent;
 import chatApp.repository.UserRepository;
 import chatApp.service.AuthService;
 import chatApp.service.UserService;
@@ -236,7 +237,7 @@ class AuthControllerTest {
         String str = authController.createUser(requestTest);
 
         //Then the user is created and added to the DB.
-        User resUser = userController.getUserByNickname("Valeria11");
+        UserToPresent resUser = userController.getUserByNickname("Valeria11");
         assertEquals(str, resUser.toString());
 
         authController.deleteUserByNickname(requestTest.getNickName());
@@ -362,10 +363,10 @@ class AuthControllerTest {
         authController.createUser(request);
 
         //When verifying
-        User resUser = userController.getUserByNickname("Valeria1");
+        UserToPresent resUser = userController.getUserByNickname("Valeria1");
         System.out.println(resUser.isVerified());
         authController.confirmUserAccount(resUser.getId());
-        User updatedUser = userController.getUserByNickname("Valeria1");
+        UserToPresent updatedUser = userController.getUserByNickname("Valeria1");
 
         //Then the user is now verified
         assertEquals(true, updatedUser.isVerified());
