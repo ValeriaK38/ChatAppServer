@@ -1,9 +1,7 @@
 package chatApp.service;
 
-import chatApp.Entities.ChatMessage;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
-import chatApp.Entities.SystemMessage;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
 import chatApp.controller.ChatController;

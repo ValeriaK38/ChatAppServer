@@ -1,7 +1,5 @@
 package chatApp;
 
-import chatApp.Entities.User;
-import chatApp.repository.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
