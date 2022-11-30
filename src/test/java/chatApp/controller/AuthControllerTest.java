@@ -3,6 +3,8 @@ package chatApp.controller;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
+import chatApp.Entities.UserToPresent;
+import chatApp.repository.UserRepository;
 import chatApp.service.AuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -235,7 +237,7 @@ class AuthControllerTest {
         String str = authController.createUser(requestTest);
 
         //Then the user is created and added to the DB.
-        User resUser = userController.getUserByNickname("Valeria11");
+        UserToPresent resUser = userController.getUserByNickname("Valeria11");
         assertEquals(str, resUser.toString());
 
         authController.deleteUserByNickname(requestTest.getNickName());
@@ -388,6 +390,8 @@ class AuthControllerTest {
     @Test
     public void User_ConfirmUserAccount_Successfully() {
         System.out.println("-------- Test user account confirmation success --------");
+
+
         //Given there is a registered unverified user.
         testUser.setVerified(false);
         //When verifying we need to send user

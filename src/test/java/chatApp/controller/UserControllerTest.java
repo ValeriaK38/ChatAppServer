@@ -3,6 +3,7 @@ package chatApp.controller;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.User;
+import chatApp.Entities.UserToPresent;
 import chatApp.repository.UserRepository;
 import chatApp.service.AuthService;
 import chatApp.service.UserService;
@@ -32,7 +33,7 @@ class UserControllerTest {
     private static User unmutedUser;
     private static User adminUser;
     private static User adminUser2;
-    List<User> users;
+    List<UserToPresent> users;
 
     @BeforeEach
     public void setup() {
@@ -103,7 +104,7 @@ class UserControllerTest {
         userController.muteUnmute(adminUser.getNickName(),unmutedUser.getNickName(),"mute");
 
         //Then the user is now muted
-        User tempUser = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent tempUser = userController.getUserByNickname(unmutedUser.getNickName());
         assertEquals(tempUser.isMuted(), true);
 
         System.out.println("The user is muted");
@@ -119,7 +120,7 @@ class UserControllerTest {
         userController.muteUnmute(adminUser.getNickName(),mutedUser.getNickName(),"unmute");
 
         //Then the user is unmuted
-        User tempUser = userController.getUserByNickname(mutedUser.getNickName());
+        UserToPresent tempUser = userController.getUserByNickname(mutedUser.getNickName());
         assertEquals(tempUser.isMuted(), false);
 
         System.out.println("The user is unmuted:");
@@ -240,7 +241,7 @@ class UserControllerTest {
         testUser.setUserStatus(UserStatus.ONLINE);
         userController.saveUserInDB(testUser);
         userController.awayOnline(testUser.getNickName());
-        User user = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent user = userController.getUserByNickname(testUser.getNickName());
         assertEquals(UserStatus.AWAY , user.getUserStatus());
         authController.deleteUserByNickname(user.getNickName());
     }
@@ -254,7 +255,7 @@ class UserControllerTest {
         testUser.setUserStatus(UserStatus.AWAY);
         userController.saveUserInDB(testUser);
         userController.awayOnline(testUser.getNickName());
-        User user = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent user = userController.getUserByNickname(testUser.getNickName());
         assertEquals(UserStatus.ONLINE , user.getUserStatus());
         authController.deleteUserByNickname(user.getNickName());
     }
@@ -270,7 +271,7 @@ class UserControllerTest {
         userController.keepAlive(unmutedUser.getNickName());
 
         //Then the timestamp of last log in has changed
-        User tempUser = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent tempUser = userController.getUserByNickname(unmutedUser.getNickName());
 
         assertNotEquals(tempUser.getLast_Loggedin() , before);
 
@@ -300,7 +301,7 @@ class UserControllerTest {
         //Given there is a user in the DB
 
         //When we try to get the user from the DB
-        User newUser = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent newUser = userController.getUserByNickname(unmutedUser.getNickName());
 
         //Then we get the user from the DB
         assertEquals(newUser.getNickName() , unmutedUser.getNickName());
