@@ -234,11 +234,11 @@ class AuthControllerTest {
         //Given there is a user who wants to register
 
         //When he tries to register
-        String str = authController.createUser(requestTest);
+        authController.createUser(requestTest);
 
         //Then the user is created and added to the DB.
-        UserToPresent resUser = userController.getUserByNickname("Valeria11");
-        assertEquals(str, resUser.toString());
+        UserToPresent resUser = userController.getUserByNickname(requestTest.getNickName());
+        assertEquals(resUser.getNickName(), requestTest.getNickName());
 
         authController.deleteUserByNickname(requestTest.getNickName());
 
