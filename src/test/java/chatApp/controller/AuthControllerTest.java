@@ -395,9 +395,9 @@ class AuthControllerTest {
         //Given there is a registered unverified user.
         testUser.setVerified(false);
         //When verifying we need to send user
-        User resUser = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent resUser = userController.getUserByNickname(testUser.getNickName());
         authController.confirmUserAccount(resUser.getId());
-        User updatedUser = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent updatedUser = userController.getUserByNickname(testUser.getNickName());
         //Then the user is now verified
         assertEquals(true, updatedUser.isVerified());
     }
