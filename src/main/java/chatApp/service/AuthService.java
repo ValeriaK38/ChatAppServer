@@ -20,9 +20,11 @@ public class AuthService {
     private final UserRepository userRepository;
     @Autowired
     VerificationEmailController verificationEmailController;
+
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     public static HashMap<String, String> userTokens = new HashMap<>();
 
     /**
