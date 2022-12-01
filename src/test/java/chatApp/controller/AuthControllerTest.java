@@ -54,7 +54,9 @@ class AuthControllerTest {
 
         logoutTokenPair = authController.logIn(testLogoutUser);
 
-        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
+        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com",
+                "080393Lera", "Valeria", "Krahmalev", "2000-03-02",
+                "description", "url", "PUBLIC");
     }
 
     @AfterEach
@@ -206,7 +208,7 @@ class AuthControllerTest {
 
         //Given there is a user we dont have in our DB.
         User testUserNotExists = new User.UserBuilder("bad@user.com", "leon1234", "Nope").build();
-        NicknameTokenPair tempPair = new NicknameTokenPair(testUserNotExists.getNickName(),testUserNotExists.getToken());
+        NicknameTokenPair tempPair = new NicknameTokenPair(testUserNotExists.getNickName(), testUserNotExists.getToken());
 
         //When he tries to logout Then he fails
         assertThrows(Exception.class, () -> authController.logOut(tempPair));
@@ -221,7 +223,7 @@ class AuthControllerTest {
         //Given there is a logged in guest.
         User testGuestLogOut = new User.UserBuilder("testGuestLogOut").build();
         authController.createGuest(testGuestLogOut);
-        NicknameTokenPair tempPair = new NicknameTokenPair(testGuestLogOut.getNickName(),testGuestLogOut.getToken());
+        NicknameTokenPair tempPair = new NicknameTokenPair(testGuestLogOut.getNickName(), testGuestLogOut.getToken());
 
         //When he tries to logout
         authController.logOut(tempPair);
@@ -447,5 +449,4 @@ class AuthControllerTest {
         );
         assertTrue(thrown.getMessage().contains("Entity must not be null!"));
     }
-
 }

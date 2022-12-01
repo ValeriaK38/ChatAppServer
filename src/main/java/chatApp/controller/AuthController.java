@@ -66,7 +66,10 @@ public class AuthController {
             } else {
                 privacyStatus = PrivacyStatus.PRIVATE;
             }
-            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
+            User user = new User.UserBuilder(request.getEmail(), request.getPassword(),
+                    request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName())
+                    .description(request.getDescription()).profilePhoto(null)
+                    .dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
             validateInputUser(user);
             return authenticationService.addUser(user, request.getUrl()).toString();
         } catch (SQLDataException e) {
