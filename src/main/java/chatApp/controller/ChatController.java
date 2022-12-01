@@ -1,10 +1,8 @@
 package chatApp.controller;
 
 import chatApp.Entities.ChatMessage;
-import chatApp.Entities.Enums.UserType;
-import chatApp.Entities.SystemMessage;
 import chatApp.Entities.RequestMessage;
-import chatApp.Entities.User;
+import chatApp.Entities.SystemMessage;
 import chatApp.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -12,7 +10,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -79,27 +76,34 @@ public class ChatController {
     }
 
     /**
-     * @return a list of all the messages in the DB
+     * @return a list of the X latest messages in the DB
      */
     @RequestMapping(value = "/getLatest", method = RequestMethod.GET)
     public List<ChatMessage> getLatest() {
-         int numberOfMessagesToShow = 20;
+        int numberOfMessagesToShow = 20;
         List<ChatMessage> messages = chatService.getAllMessages();
-        if(messages.size() > numberOfMessagesToShow)
-        return messages.subList(messages.size() - numberOfMessagesToShow, messages.size());
-        else return messages;
+        if (messages.size() > numberOfMessagesToShow) {
+            return messages.subList(messages.size() - numberOfMessagesToShow, messages.size());
+        } else {
+            return messages;
+        }
     }
 
-
+    /**
+     * returns list of messages by given amount
+     * @param chunks number of massages
+     * @return list of messages
+     */
     @RequestMapping(value = "/getLatestChunks", method = RequestMethod.GET)
     public List<ChatMessage> getLatestChunks(@RequestParam int chunks) {
         List<ChatMessage> messages = chatService.getAllMessages();
         int numberOfMessagesToShow = 20 * chunks;
-        if(messages.size() > 20 && numberOfMessagesToShow < messages.size())
+        if (messages.size() > 20 && numberOfMessagesToShow < messages.size()) {
             return messages.subList(messages.size() - numberOfMessagesToShow, messages.size());
-        else if(messages.size() < 20)
+        } else if ( messages.size() < 20 &&  messages.size()>0) {
             return messages;
-        else throw new RuntimeException("No more messages");
-
+        } else {
+            return null;
+        }
     }
 }

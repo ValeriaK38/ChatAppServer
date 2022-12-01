@@ -2,10 +2,8 @@ package chatApp.service;
 
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.RequestMessage;
-import chatApp.Entities.User;
 import chatApp.repository.MessageRepository;
 import chatApp.repository.UserRepository;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

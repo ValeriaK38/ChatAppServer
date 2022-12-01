@@ -348,5 +348,4 @@ class UserControllerTest {
 
         System.out.println("There is only one user who is left online, the other one was logged out by the system");
     }
-
 }
