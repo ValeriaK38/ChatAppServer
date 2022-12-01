@@ -182,8 +182,8 @@ public class AuthController {
      * @return Returns a string which consists of a successful log-out message
      */
     @RequestMapping(value = "logout", method = RequestMethod.POST)
-    public String logOut(@RequestBody User user) {
-        return authenticationService.logOut(user.getNickName());
+    public String logOut(@RequestBody NicknameTokenPair user) {
+        return authenticationService.logOut(user);
     }
 
 
