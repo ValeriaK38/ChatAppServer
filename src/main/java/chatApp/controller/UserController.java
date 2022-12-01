@@ -3,6 +3,7 @@ package chatApp.controller;
 
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
 import chatApp.service.UserService;
@@ -32,27 +33,27 @@ public class UserController {
      * The function mutes or unmutes a user , Only an admin can mute a user , the muted/unmuted user must not be
      * an admin himself.
      *
-     * @param adminNickName - The nickname of the admin that wishes to mute someone.
+     * @param admin         - A NicknameTokenPair of the admin who clicked the button.
      * @param userNickName- The nickname of the user the admin wishes to mute.
      * @param status        - Can be either "mute" or "unmute" to know which action to take.
      */
     @RequestMapping(value = "/muteUnmute", method = RequestMethod.PATCH)
-    public String muteUnmute(@RequestParam String adminNickName, @RequestParam String userNickName, @RequestParam String status) {
-        userService.muteUnmute(adminNickName, userNickName, status);
+    public String muteUnmute(@RequestBody NicknameTokenPair admin, @RequestParam String userNickName, @RequestParam String status) {
+        userService.muteUnmute(admin, userNickName, status);
         return String.format("%s is now %sd!", userNickName, status);
     }
 
     /**
      * Switches the status of a user from online to away or from away to online
      *
-     * @param nickName - The nickname of the user we wish to switch his status
+     * @param user - A NicknameTokenPair of the user we wish to switch his status
      * @return a message of the successful switch.
      */
     @RequestMapping(value = "/awayOnline", method = RequestMethod.PATCH)
-    public String awayOnline(@RequestParam String nickName) {
+    public String awayOnline(@RequestBody NicknameTokenPair user) {
 
-        UserStatus status = userService.awayOnline(nickName);
-        return String.format("%s changed to %s!", nickName, status.toString());
+        UserStatus status = userService.awayOnline(user);
+        return String.format("%s changed to %s!", user.getNickName(), status.toString());
     }
 
     /**
@@ -79,7 +80,7 @@ public class UserController {
      *
      * @param user - The user we wish to save in the DB
      */
-    public void saveUserInDB(User user){
+    public void saveUserInDB(User user) {
         userService.saveUserInDB(user);
     }
 
@@ -94,6 +95,7 @@ public class UserController {
 
     /**
      * We need this just for the tests otherwise we would have this method just in the service layer.
+     *
      * @param userNickName - The nickname of the user we wish to retrieve.
      * @return the user we wanted to get from the DB
      */

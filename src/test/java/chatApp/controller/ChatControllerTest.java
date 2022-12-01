@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static chatApp.service.AuthService.userTokens;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
@@ -52,8 +53,10 @@ class ChatControllerTest {
     void Test_Create_Message_Successfully() {
         System.out.println("-------- Test Creating a new message successfully --------");
 
+        //Creates a user and sets the token usage so he is a valid user who can send messages.
         testUser = new User.UserBuilder("test@test4.com", "leon1234", "test4").build();
         testUser.setToken("Test");
+        userTokens.put(testUser.getNickName(), testUser.getToken());
         userController.saveUserInDB(testUser);
 
         int before_size = chatController.getAllMessages().size();
@@ -66,8 +69,8 @@ class ChatControllerTest {
 
         //Then a message was created and added to the database.
         int after_size = chatController.getAllMessages().size();
-        ChatMessage testMessage = chatController.getAllMessages().get(after_size-1);
-        assertEquals((after_size - before_size) , 1);
+        ChatMessage testMessage = chatController.getAllMessages().get(after_size - 1);
+        assertEquals((after_size - before_size), 1);
         assertTrue(message.getContent().equals(testMessage.getContent()));
 
         authController.deleteUserByNickname(testUser.getNickName());
@@ -81,10 +84,10 @@ class ChatControllerTest {
 
         //Should not even happen because only registered and online users can try to create a message but checking just in case.
 
-        RequestMessage message = new RequestMessage("Leon","Test");
+        RequestMessage message = new RequestMessage("Leon", "Test");
 
         //When we try to create the message with an invalid user Then we fail
-        assertThrows(Exception.class, () ->  chatController.createMessage(message));
+        assertThrows(Exception.class, () -> chatController.createMessage(message));
 
         System.out.println("Failed to create a message because couldn't find a user with this token");
     }
@@ -106,27 +109,32 @@ class ChatControllerTest {
 
 
     @Test
-    void getLatestChunks_Successfully(){
+    void getLatestChunks_Successfully() {
         //Given there are messages in the database
+
         //When i try to get the list of all the latest messages
         messageList = chatController.getLatestChunks(1);
 
         //Then I have a list of the lastest messages, according chunks
         assertFalse(messageList.isEmpty());
+
         System.out.println("The first message from the first chunk is:");
         System.out.println(messageList.get(0));
     }
 
 
     @Test
-    void getLatest_Successfully(){
+    void getLatest_Successfully() {
+
         //Given there are messages in the database
+
         //When i try to get the list of the x latest messages
         messageList = chatController.getLatestChunks(1);
+
         //Then I have a list of the lastest messages
         assertFalse(messageList.isEmpty());
+
         System.out.println("The first message from the first chunk is:");
         System.out.println(messageList.get(0));
     }
-
 }
