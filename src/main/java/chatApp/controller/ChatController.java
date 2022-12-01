@@ -76,7 +76,7 @@ public class ChatController {
     }
 
     /**
-     * @return a list of all the messages in the DB
+     * @return a list of the X latest messages in the DB
      */
     @RequestMapping(value = "/getLatest", method = RequestMethod.GET)
     public List<ChatMessage> getLatest() {
@@ -91,7 +91,6 @@ public class ChatController {
 
     /**
      * returns list of messages by given amount
-     *
      * @param chunks number of massages
      * @return list of messages
      */
@@ -101,7 +100,7 @@ public class ChatController {
         int numberOfMessagesToShow = 20 * chunks;
         if (messages.size() > 20 && numberOfMessagesToShow < messages.size()) {
             return messages.subList(messages.size() - numberOfMessagesToShow, messages.size());
-        } else if (messages.size() < 20) {
+        } else if ( messages.size() < 20 &&  messages.size()>0) {
             return messages;
         } else {
             return null;

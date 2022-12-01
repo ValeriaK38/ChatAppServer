@@ -94,13 +94,39 @@ class ChatControllerTest {
         System.out.println("-------- Test pulling all messages from database --------");
         //Given there are messages in the database
 
-        //When i try to get the list of all the users
+        //When i try to get the list of all the messages
         messageList = chatController.getAllMessages();
 
-        //Then I now have a list of all the users in the database
+        //Then I now have a list of all the messages the users in the database
         assertFalse(messageList.isEmpty());
 
         System.out.println("The first message in the database is:");
         System.out.println(messageList.get(0));
     }
+
+
+    @Test
+    void getLatestChunks_Successfully(){
+        //Given there are messages in the database
+        //When i try to get the list of all the latest messages
+        messageList = chatController.getLatestChunks(1);
+
+        //Then I have a list of the lastest messages, according chunks
+        assertFalse(messageList.isEmpty());
+        System.out.println("The first message from the first chunk is:");
+        System.out.println(messageList.get(0));
+    }
+
+
+    @Test
+    void getLatest_Successfully(){
+        //Given there are messages in the database
+        //When i try to get the list of the x latest messages
+        messageList = chatController.getLatestChunks(1);
+        //Then I have a list of the lastest messages
+        assertFalse(messageList.isEmpty());
+        System.out.println("The first message from the first chunk is:");
+        System.out.println(messageList.get(0));
+    }
+
 }
