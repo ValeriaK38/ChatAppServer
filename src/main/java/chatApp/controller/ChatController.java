@@ -104,8 +104,7 @@ public class ChatController {
         } else if (messages.size() < 20) {
             return messages;
         } else {
-            throw new RuntimeException("No more messages");
+            return null;
         }
-
     }
 }

@@ -320,5 +320,4 @@ class UserControllerTest {
 
         System.out.println("Cant retrieve user who is not in the DB!");
     }
-
 }
