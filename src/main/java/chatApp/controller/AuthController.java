@@ -1,16 +1,16 @@
 package chatApp.controller;
 
 import chatApp.Entities.Enums.PrivacyStatus;
+import chatApp.Entities.RequestActivation;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
+import chatApp.Entities.UserToPresent;
 import chatApp.service.AuthService;
+import chatApp.service.EmailSenderService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLDataException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 public class AuthController {
     @Autowired
     private AuthService authenticationService;
+    @Autowired
+    private EmailSenderService emailSenderService;
     private static final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z]).{8,20}$");
     private static final Pattern nicknamePattern = Pattern.compile("^[A-Za-z][A-Za-z0-9_]{4,20}$");
     private static final Pattern stringNamePattern = Pattern.compile("[A-Za-z]{2,20}");
@@ -30,14 +32,15 @@ public class AuthController {
     /**
      * The method sends to controller the user's id to validate it
      *
-     * @param id user's id that need to be validated
-     *           catches SQLDataException when the provided id doesn't exist in DB
+     * @param activationRequest has user's id that need to be validated and verification code
+     *                          catches SQLDataException when the provided id doesn't exist in DB
      */
     @RequestMapping(value = "/validateUser", method = RequestMethod.POST)
-    public void confirmUserAccount(@RequestBody Long id) {
+    public void confirmUserAccount(@RequestBody RequestActivation activationRequest) {
         try {
-            authenticationService.validateUserAccount(id);
-        } catch (SQLDataException e) {
+            Long id = Long.parseLong(activationRequest.getId());
+            authenticationService.validateUserAccount(id, activationRequest.getActivationCode());
+        } catch (IllegalArgumentException e) {
             System.out.println(e);
         }
     }
@@ -57,6 +60,9 @@ public class AuthController {
                 validateInputStringDateDate(request.getDateOfBirth());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 dateTime = LocalDate.parse(request.getDateOfBirth(), formatter);
+                if (dateTime.isAfter(LocalDate.now())) {
+                    throw new IllegalArgumentException("invalid date:  you are not from the future!");
+                }
             }
             String privacyStatusStr = request.getPrivacyStatus();
             PrivacyStatus privacyStatus;
@@ -65,17 +71,17 @@ public class AuthController {
             } else {
                 privacyStatus = PrivacyStatus.PRIVATE;
             }
+
             User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
             validateInputUser(user);
-            return authenticationService.addUser(user, request.getUrl()).toString();
-        } catch (SQLDataException e) {
-            System.out.println(e);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.toString(), e);
+            User userRes = authenticationService.addUser(user, request.getUrl());
+            emailSenderService.sendVerificationEmail(user, request.getUrl());
+            UserToPresent userToPresent = new UserToPresent(userRes);
+            return userToPresent.toString();
+
         } catch (IllegalArgumentException e) {
             System.out.println(e);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.toString(), e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -109,24 +115,31 @@ public class AuthController {
      * @throws IllegalArgumentException for invalid input
      */
     private void validateInputUser(User user) {
-        Matcher matchMail = emailPattern.matcher(user.getEmail());
-        Matcher matchPassword = passwordPattern.matcher(user.getPassword());
-        Matcher matchNickname = nicknamePattern.matcher(user.getNickName());
 
-        boolean emailMatchFound = matchMail.matches();
-        boolean passwordMatchFound = matchPassword.matches();
-        boolean nicknameMatchFound = matchNickname.matches();
-
-        if (!emailMatchFound) {
-            throw new IllegalArgumentException("invalid email, use pattern: example@gmail.com");
-        }
-        if (!passwordMatchFound) {
-            throw new IllegalArgumentException("invalid password: need to be at lest 8 characters long, and contain numbers and letters");
+        if (user.getNickName() != null) {
+            Matcher matchNickname = nicknamePattern.matcher(user.getNickName());
+            boolean nicknameMatchFound = matchNickname.matches();
+            if (!nicknameMatchFound) {
+                throw new IllegalArgumentException("invalid nickname: use A-z/a-z/0-9");
+            }
         }
 
-        if (!nicknameMatchFound) {
-            throw new IllegalArgumentException("invalid nickname: use A-z/a-z/0-9");
+        if (user.getPassword() != null) {
+            Matcher matchPassword = passwordPattern.matcher(user.getPassword());
+            boolean passwordMatchFound = matchPassword.matches();
+            if (!passwordMatchFound) {
+                throw new IllegalArgumentException("invalid password: need to be at lest 8 characters long, and contain numbers and letters");
+            }
         }
+
+        if (user.getEmail() != null) {
+            Matcher matchMail = emailPattern.matcher(user.getEmail());
+            boolean emailMatchFound = matchMail.matches();
+            if (!emailMatchFound) {
+                throw new IllegalArgumentException("invalid email, use pattern: example@gmail.com");
+            }
+        }
+
 
         if (user.getFirstName() != null) {
             Matcher matchFirstName = stringNamePattern.matcher(user.getFirstName());
