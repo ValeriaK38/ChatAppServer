@@ -74,7 +74,7 @@ class UserServiceTest {
         //When I try to get only users who are online(Can be away as well)
         users = userService.getAllOnlineUsers();
 
-        //Then I get only the online users
+        //Then I get only the online users+
         assertEquals(users.size(),2);
 
         System.out.println("There are two online users only!");
