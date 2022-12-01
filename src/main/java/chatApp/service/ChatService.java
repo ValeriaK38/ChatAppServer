@@ -2,11 +2,14 @@ package chatApp.service;
 
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.RequestMessage;
+import chatApp.Entities.User;
 import chatApp.repository.MessageRepository;
 import chatApp.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import static chatApp.service.AuthService.userTokens;
 import java.util.List;
+
 
 @Service
 public class ChatService {
@@ -25,13 +28,21 @@ public class ChatService {
      * @return a saved message with it's generated id
      */
     public ChatMessage addMessage(RequestMessage requestMessage) {
-        String sender = userRepository.findByToken(requestMessage.getToken()).getNickName();
+        User sender = userRepository.findByToken(requestMessage.getToken());
 
-        if (userRepository.findByNickName(sender).isMuted()) {
+        if(!userTokens.get(sender.getNickName()).equals(requestMessage.getToken())){
+            throw new IllegalArgumentException("The wrong token was sent!");
+        }
+
+        if(sender == null){
+            throw new IllegalArgumentException("Wrong token was sent from client or no such user");
+        }
+
+        if (sender.isMuted()) {
             throw new RuntimeException("You are muted! you cant send messages.");
         }
 
-        ChatMessage chatMessage = new ChatMessage(sender, requestMessage.getContent());
+        ChatMessage chatMessage = new ChatMessage(sender.getNickName(), requestMessage.getContent());
 
         return messageRepository.save(chatMessage);
     }

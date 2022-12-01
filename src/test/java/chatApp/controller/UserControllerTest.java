@@ -105,7 +105,7 @@ class UserControllerTest {
         userController.muteUnmute(adminUser.getNickName(),unmutedUser.getNickName(),"mute");
 
         //Then the user is now muted
-        UserToPresent tempUser = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent tempUser = userController.getUserByNicknameToPresent(unmutedUser.getNickName());
         assertEquals(tempUser.isMuted(), true);
 
         System.out.println("The user is muted");
@@ -121,7 +121,7 @@ class UserControllerTest {
         userController.muteUnmute(adminUser.getNickName(),mutedUser.getNickName(),"unmute");
 
         //Then the user is unmuted
-        UserToPresent tempUser = userController.getUserByNickname(mutedUser.getNickName());
+        UserToPresent tempUser = userController.getUserByNicknameToPresent(mutedUser.getNickName());
         assertEquals(tempUser.isMuted(), false);
 
         System.out.println("The user is unmuted:");
@@ -242,7 +242,7 @@ class UserControllerTest {
         testUser.setUserStatus(UserStatus.ONLINE);
         userController.saveUserInDB(testUser);
         userController.awayOnline(testUser.getNickName());
-        UserToPresent user = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent user = userController.getUserByNicknameToPresent(testUser.getNickName());
         assertEquals(UserStatus.AWAY , user.getUserStatus());
         authController.deleteUserByNickname(user.getNickName());
     }
@@ -256,7 +256,7 @@ class UserControllerTest {
         testUser.setUserStatus(UserStatus.AWAY);
         userController.saveUserInDB(testUser);
         userController.awayOnline(testUser.getNickName());
-        UserToPresent user = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent user = userController.getUserByNicknameToPresent(testUser.getNickName());
         assertEquals(UserStatus.ONLINE , user.getUserStatus());
         authController.deleteUserByNickname(user.getNickName());
     }
@@ -272,7 +272,7 @@ class UserControllerTest {
         userController.keepAlive(unmutedUser.getNickName());
 
         //Then the timestamp of last log in has changed
-        UserToPresent tempUser = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent tempUser = userController.getUserByNicknameToPresent(unmutedUser.getNickName());
 
         assertNotEquals(tempUser.getLast_Loggedin() , before);
 
@@ -302,7 +302,7 @@ class UserControllerTest {
         //Given there is a user in the DB
 
         //When we try to get the user from the DB
-        UserToPresent newUser = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent newUser = userController.getUserByNicknameToPresent(unmutedUser.getNickName());
 
         //Then we get the user from the DB
         assertEquals(newUser.getNickName() , unmutedUser.getNickName());
@@ -338,8 +338,8 @@ class UserControllerTest {
         //When we check if there are people who left the page without pressing the logout button
         userController.checkOfflineUsers();
 
-        UserToPresent testOnline = userController.getUserByNickname(mutedUser.getNickName());
-        UserToPresent testOffline = userController.getUserByNickname(unmutedUser.getNickName());
+        UserToPresent testOnline = userController.getUserByNicknameToPresent(mutedUser.getNickName());
+        UserToPresent testOffline = userController.getUserByNicknameToPresent(unmutedUser.getNickName());
 
 
         //Then we see there is only one person who is logged in

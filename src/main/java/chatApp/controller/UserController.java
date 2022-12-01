@@ -85,10 +85,19 @@ public class UserController {
 
     /**
      * @param userNickName - The nickname of the user we wish to retrieve.
-     * @return the user we wanted to get from the DB
+     * @return the user we wanted to get from the DB as a UserToPresent class
      */
     @RequestMapping(value = "/getUserByNickname", method = RequestMethod.POST)
-    public UserToPresent getUserByNickname(@RequestBody String userNickName) {
+    public UserToPresent getUserByNicknameToPresent(@RequestBody String userNickName) {
+        return userService.getUserToPresentByNickname(userNickName);
+    }
+
+    /**
+     * We need this just for the tests otherwise we would have this method just in the service layer.
+     * @param userNickName - The nickname of the user we wish to retrieve.
+     * @return the user we wanted to get from the DB
+     */
+    public User getUserByNickname(String userNickName) {
         return userService.getUserByNickname(userNickName);
     }
 }

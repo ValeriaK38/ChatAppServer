@@ -110,15 +110,19 @@ public class AuthService {
      * @param nickName - The nickname of the user we want to log out.
      * @return Returns a string which consists of a successful log-out message
      */
-    public String logOut(String nickName) {
+    public String logOut(NicknameTokenPair user) {
 
-        //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
-        if (nickName.startsWith("Guest")) {
-            nickName = nickName.replace("Guest-", "");
+        if(!userTokens.get(user.getNickName()).equals(user.getToken())){
+            throw new IllegalArgumentException("Invalid token was sent");
         }
 
-        User tempUser = userRepository.findByNickName(nickName);
-        userTokens.remove(nickName);
+        //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
+        if (user.getNickName().startsWith("Guest")) {
+            user.setNickName(user.getNickName().replace("Guest-", ""));
+        }
+
+        User tempUser = userRepository.findByNickName(user.getNickName());
+        userTokens.remove(user.getNickName());
 
         if (tempUser.getUserStatus() == UserStatus.OFFLINE) {
             throw new IllegalStateException("The user is already offline! cant log out again");

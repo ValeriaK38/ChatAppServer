@@ -5,6 +5,9 @@ public class NicknameTokenPair {
     private String nickName;
     private String token;
 
+    public NicknameTokenPair() {
+    }
+
     public NicknameTokenPair(String nickName, String token) {
         this.nickName = nickName;
         this.token = token;

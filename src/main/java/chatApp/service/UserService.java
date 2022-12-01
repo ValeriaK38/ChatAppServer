@@ -2,6 +2,7 @@ package chatApp.service;
 
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
 import chatApp.controller.ChatController;
@@ -47,15 +48,23 @@ public class UserService {
 
     /**
      * @param nickName - The nickname of the user we wish to retrieve.
-     * @return the user we wanted to get from the DB
+     * @return the user we wanted to get from the DB but as a UserToPresent Class
      */
-    public UserToPresent getUserByNickname(String nickName) {
+    public UserToPresent getUserToPresentByNickname(String nickName) {
         User tempUser = userRepository.findByNickName(nickName);
         UserToPresent userToPresent = null;
         if(tempUser != null){
              userToPresent = new UserToPresent(tempUser);
         }
         return userToPresent;
+    }
+
+    /**
+     * @param nickName - The nickname of the user we wish to retrieve.
+     * @return the user we wanted to get from the DB
+     */
+    public User getUserByNickname(String nickName) {
+        return userRepository.findByNickName(nickName);
     }
 
     /**
@@ -142,9 +151,10 @@ public class UserService {
         List<User> users = getAllOnlineUsers();
 
         for (User tempUser : users) {
+            NicknameTokenPair tempPair = new NicknameTokenPair(tempUser.getNickName(),tempUser.getToken());
             if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) / (60 * 1000) >= 10) {
                 if (tempUser.getUserStatus() != UserStatus.OFFLINE) {
-                    authService.logOut(tempUser.getNickName());
+                    authService.logOut(tempPair);
                 }
             }
         }
