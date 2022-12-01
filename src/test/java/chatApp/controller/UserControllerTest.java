@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -319,6 +320,33 @@ class UserControllerTest {
         assertNull(userController.getUserByNickname("Not in DB Test User"));
 
         System.out.println("Cant retrieve user who is not in the DB!");
+    }
+
+    @Test
+    public void check_Offline_Users(){
+
+        Timestamp now = Timestamp.from(Instant.now());
+
+        //Given there are two users one of them has exited the page without pressing the logout button a while ago
+        mutedUser.setUserStatus(UserStatus.ONLINE);
+        unmutedUser.setUserStatus(UserStatus.ONLINE);
+        mutedUser.setLast_Loggedin(now);
+        unmutedUser.setLast_Loggedin(Timestamp.valueOf("2018-09-01 09:01:15"));
+        userController.saveUserInDB(mutedUser);
+        userController.saveUserInDB(unmutedUser);
+
+        //When we check if there are people who left the page without pressing the logout button
+        userController.checkOfflineUsers();
+
+        UserToPresent testOnline = userController.getUserByNickname(mutedUser.getNickName());
+        UserToPresent testOffline = userController.getUserByNickname(unmutedUser.getNickName());
+
+
+        //Then we see there is only one person who is logged in
+        assertEquals(testOnline.getUserStatus(),UserStatus.ONLINE);
+        assertEquals(testOffline.getUserStatus(),UserStatus.OFFLINE);
+
+        System.out.println("There is only one user who is left online, the other one was logged out by the system");
     }
 
 }
