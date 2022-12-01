@@ -142,7 +142,7 @@ public class UserService {
         List<User> users = getAllOnlineUsers();
 
         for (User tempUser : users) {
-            if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) / (60 * 1000) >= 1) {
+            if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) / (60 * 1000) >= 10) {
                 if (tempUser.getUserStatus() != UserStatus.OFFLINE) {
                     authService.logOut(tempUser.getNickName());
                 }

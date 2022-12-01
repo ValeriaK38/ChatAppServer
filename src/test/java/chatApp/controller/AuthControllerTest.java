@@ -1,6 +1,7 @@
 package chatApp.controller;
 
 import chatApp.Entities.Enums.UserStatus;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
@@ -74,13 +75,13 @@ class AuthControllerTest {
 
         //Given there is a registered user.
 
-        String loggedInUser = authController.logIn(testUser); // When he logs in
-        String[] result = loggedInUser.split(":");
+        NicknameTokenPair loggedInUser = authController.logIn(testUser); // When he logs in
 
-        assertEquals(result[0], testUser.getNickName()); // Then he gets a token
-        assertNotEquals(result[1], null);
+        assertEquals(loggedInUser.getNickName(), testUser.getNickName()); // Then he gets a token
+        assertNotEquals(loggedInUser.getToken(), null);
 
-        System.out.println(String.format("The user %s has logged in successfully and his token is: %s", result[0], result[1]));
+        System.out.println(String.format("The user %s has logged in successfully and his token is: %s",
+                loggedInUser.getNickName(), loggedInUser.getToken()));
     }
 
     @Test
@@ -143,14 +144,14 @@ class AuthControllerTest {
         testGuest.setNickName(createRandomString(10));
 
         //When he tries to enter the main chat
-        String createdGuest = authController.createGuest(testGuest);
-        String[] result = createdGuest.split(":");
+        NicknameTokenPair createdGuest = authController.createGuest(testGuest);
 
         //Then he gets a token and enters the chat.
-        assertEquals(result[0], "Guest-" + testGuest.getNickName());
-        assertNotEquals(result[1], null); // Then
+        assertEquals(createdGuest.getNickName(), "Guest-" + testGuest.getNickName());
+        assertNotEquals(createdGuest.getToken(), null); // Then
 
-        System.out.println(String.format("The guest %s has logged in successfully and his token is: %s", result[0], result[1]));
+        System.out.println(String.format("The guest %s has logged in successfully and his token is: %s",
+                createdGuest.getNickName(), createdGuest.getToken()));
     }
 
     @Test
