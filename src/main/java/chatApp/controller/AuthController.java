@@ -74,7 +74,7 @@ public class AuthController {
 
             User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
             validateInputUser(user);
-            User userRes = authenticationService.addUser(user, request.getUrl());
+            User userRes = authenticationService.addUser(user);
             emailSenderService.sendVerificationEmail(user, request.getUrl());
             UserToPresent userToPresent = new UserToPresent(userRes);
             return userToPresent.toString();

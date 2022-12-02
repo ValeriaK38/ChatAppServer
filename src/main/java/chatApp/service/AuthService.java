@@ -29,7 +29,7 @@ public class AuthService {
      * @return a saved user with it's generated id
      * @throws IllegalArgumentException when the provided email already exists
      */
-    public User addUser(User user, String url) throws IllegalArgumentException {
+    public User addUser(User user) throws IllegalArgumentException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException(String.format("Email %s exists in user table", user.getEmail()));
         }
@@ -49,8 +49,13 @@ public class AuthService {
     public void validateUserAccount(Long id, String verificationCode) throws IllegalArgumentException {
         User user = userRepository.findById(id).get();
         if (user != null) {
-            user.setVerified(true);
-            userRepository.save(user);
+            if (user.getVerificationCode().equals(verificationCode)) {
+                user.setVerified(true);
+                userRepository.save(user);
+            }
+            else{
+                throw new IllegalArgumentException("Wrong verification code - not matching the user id");
+            }
         } else {
             throw new IllegalArgumentException("This user is not registered");
         }
