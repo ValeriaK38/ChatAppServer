@@ -10,6 +10,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static chatApp.utilities.Utilities.createRandomString;
+
 
 @Entity
 @Table(name = "user")
@@ -50,6 +52,16 @@ public class User {
     private boolean isVerified;
     @Column(name = "last_loggedin")
     private Timestamp last_Loggedin;
+    @Column(name = "verification_code")
+    private String verificationCode;
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
 
     public User() {
     }
@@ -208,13 +220,14 @@ public class User {
                 && Objects.equals(nickName, user.nickName) && Objects.equals(email, user.email)
                 && Objects.equals(password, user.password) && Objects.equals(profilePhoto, user.profilePhoto)
                 && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(description, user.description)
-                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus;
+                && userType == user.userType && userStatus == user.userStatus && privacyStatus == user.privacyStatus
+                && Objects.equals(verificationCode, user.verificationCode);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, nickName, email, password, profilePhoto, dateOfBirth,
-                description, userType, userStatus, privacyStatus);
+                description, userType, userStatus, privacyStatus, verificationCode);
     }
 
     @Override
@@ -252,6 +265,8 @@ public class User {
         private boolean isMuted = false;
         private boolean isValidated = false;
         private String token;
+
+        private String verificationCode = createRandomString(8);
 
         public UserBuilder(String email, String password, String nickName) {
             this.email = email;
@@ -308,6 +323,11 @@ public class User {
             return this;
         }
 
+        public UserBuilder verificationCode() {
+            this.verificationCode = createRandomString(8);
+            return this;
+        }
+
         public User build() {
             return new User(this);
         }
@@ -328,5 +348,6 @@ public class User {
         this.isMuted = builder.isMuted;
         this.isVerified = builder.isValidated;
         this.token = builder.token;
+        this.verificationCode = builder.verificationCode;
     }
 }

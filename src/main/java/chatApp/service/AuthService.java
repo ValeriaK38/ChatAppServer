@@ -4,12 +4,9 @@ import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.User;
-import chatApp.controller.VerificationEmailController;
 import chatApp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLDataException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
@@ -19,8 +16,6 @@ import static chatApp.utilities.Utilities.createRandomString;
 @Service
 public class AuthService {
     private final UserRepository userRepository;
-    @Autowired
-    VerificationEmailController verificationEmailController;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -33,17 +28,16 @@ public class AuthService {
      *
      * @param user - the user's data
      * @return a saved user with it's generated id
-     * @throws SQLDataException when the provided email already exists
+     * @throws IllegalArgumentException when the provided email already exists
      */
-    public User addUser(User user, String url) throws SQLDataException {
+    public User addUser(User user) throws IllegalArgumentException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new SQLDataException(String.format("Email %s exists in user table", user.getEmail()));
+            throw new IllegalArgumentException(String.format("Email %s exists in user table", user.getEmail()));
         }
         if (userRepository.findByNickName(user.getNickName()) != null) {
-            throw new SQLDataException(String.format("Nickname %s exists in user table", user.getNickName()));
+            throw new IllegalArgumentException(String.format("Nickname %s exists in user table", user.getNickName()));
         }
         userRepository.save(user);
-        verificationEmailController.sendEmail(user, url);
         return userRepository.findByEmail(user.getEmail());
     }
 
@@ -51,15 +45,20 @@ public class AuthService {
      * Changes user's isVerified(is_verified) filed to "true" and activates user's account
      *
      * @param id - the user's id
-     * @throws SQLDataException when the provided id doesn't exist
+     * @throws IllegalArgumentException when the provided id doesn't exist
      */
-    public void validateUserAccount(Long id) throws SQLDataException {
+    public void validateUserAccount(Long id, String verificationCode) throws IllegalArgumentException {
         User user = userRepository.findById(id).get();
         if (user != null) {
-            user.setVerified(true);
-            userRepository.save(user);
+            if (user.getVerificationCode().equals(verificationCode)) {
+                user.setVerified(true);
+                userRepository.save(user);
+            }
+            else{
+                throw new IllegalArgumentException("Wrong verification code - not matching the user id");
+            }
         } else {
-            throw new SQLDataException("This user is not registered");
+            throw new IllegalArgumentException("This user is not registered");
         }
     }
 
