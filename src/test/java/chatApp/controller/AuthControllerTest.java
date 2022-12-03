@@ -1,6 +1,7 @@
 package chatApp.controller;
 
 import chatApp.Entities.Enums.UserStatus;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
@@ -34,6 +35,7 @@ class AuthControllerTest {
     private static User testUser;
     private static User testGuest;
     private static User testLogoutUser;
+    private static NicknameTokenPair logoutTokenPair;
     RequestAddUser requestTest;
 
     @BeforeEach
@@ -49,9 +51,12 @@ class AuthControllerTest {
         userController.saveUserInDB(testUser);
         userController.saveUserInDB(testGuest);
         userController.saveUserInDB(testLogoutUser);
-        authController.logIn(testLogoutUser);
 
-        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com", "080393Lera", "Valeria", "Krahmalev", "2000-03-02", "description", "url", "PUBLIC");
+        logoutTokenPair = authController.logIn(testLogoutUser);
+
+        requestTest = new RequestAddUser("Valeria11", "lera38@gmail11.com",
+                "080393Lera", "Valeria", "Krahmalev", "2000-03-02",
+                "description", "url", "PUBLIC");
     }
 
     @AfterEach
@@ -63,6 +68,7 @@ class AuthControllerTest {
         authController.deleteUserByNickname(testLogoutUser.getNickName());
         testUser = null;
         testGuest = null;
+        logoutTokenPair = null;
         authService.userTokens.clear();
 
         requestTest = null;
@@ -74,13 +80,13 @@ class AuthControllerTest {
 
         //Given there is a registered user.
 
-        String loggedInUser = authController.logIn(testUser); // When he logs in
-        String[] result = loggedInUser.split(":");
+        NicknameTokenPair loggedInUser = authController.logIn(testUser); // When he logs in
 
-        assertEquals(result[0], testUser.getNickName()); // Then he gets a token
-        assertNotEquals(result[1], null);
+        assertEquals(loggedInUser.getNickName(), testUser.getNickName()); // Then he gets a token
+        assertNotEquals(loggedInUser.getToken(), null);
 
-        System.out.println(String.format("The user %s has logged in successfully and his token is: %s", result[0], result[1]));
+        System.out.println(String.format("The user %s has logged in successfully and his token is: %s",
+                loggedInUser.getNickName(), loggedInUser.getToken()));
     }
 
     @Test
@@ -143,14 +149,14 @@ class AuthControllerTest {
         testGuest.setNickName(createRandomString(10));
 
         //When he tries to enter the main chat
-        String createdGuest = authController.createGuest(testGuest);
-        String[] result = createdGuest.split(":");
+        NicknameTokenPair createdGuest = authController.createGuest(testGuest);
 
         //Then he gets a token and enters the chat.
-        assertEquals(result[0], "Guest-" + testGuest.getNickName());
-        assertNotEquals(result[1], null); // Then
+        assertEquals(createdGuest.getNickName(), "Guest-" + testGuest.getNickName());
+        assertNotEquals(createdGuest.getToken(), null); // Then
 
-        System.out.println(String.format("The guest %s has logged in successfully and his token is: %s", result[0], result[1]));
+        System.out.println(String.format("The guest %s has logged in successfully and his token is: %s",
+                createdGuest.getNickName(), createdGuest.getToken()));
     }
 
     @Test
@@ -172,7 +178,7 @@ class AuthControllerTest {
         //Given there is a logged in user.
 
         //When he tries to logout
-        authController.logOut(testLogoutUser);
+        authController.logOut(logoutTokenPair);
 
         //Then his status changes to OFFLINE and his token becomes null
         assertNull(testLogoutUser.getToken());
@@ -187,10 +193,10 @@ class AuthControllerTest {
         //This should not be possible , only someone who entered the chat can see the logout button but checking just in case.
 
         //Given there is a logged out user.
-        authController.logOut(testLogoutUser);
+        authController.logOut(logoutTokenPair);
 
         //When he tries to logout Then he fails
-        assertThrows(Exception.class, () -> authController.logOut(testLogoutUser));
+        assertThrows(Exception.class, () -> authController.logOut(logoutTokenPair));
 
         System.out.println("The user was already logged out , cant log out again.");
     }
@@ -202,9 +208,10 @@ class AuthControllerTest {
 
         //Given there is a user we dont have in our DB.
         User testUserNotExists = new User.UserBuilder("bad@user.com", "leon1234", "Nope").build();
+        NicknameTokenPair tempPair = new NicknameTokenPair(testUserNotExists.getNickName(), testUserNotExists.getToken());
 
         //When he tries to logout Then he fails
-        assertThrows(Exception.class, () -> authController.logOut(testUserNotExists));
+        assertThrows(Exception.class, () -> authController.logOut(tempPair));
 
         System.out.println("The user was not registered , cant log out.");
     }
@@ -216,9 +223,10 @@ class AuthControllerTest {
         //Given there is a logged in guest.
         User testGuestLogOut = new User.UserBuilder("testGuestLogOut").build();
         authController.createGuest(testGuestLogOut);
+        NicknameTokenPair tempPair = new NicknameTokenPair(testGuestLogOut.getNickName(), testGuestLogOut.getToken());
 
         //When he tries to logout
-        authController.logOut(testGuestLogOut);
+        authController.logOut(tempPair);
 
         //Then he is deleted from the DB to free up the nickname.
         assertNull(userController.getUserByNickname(testGuestLogOut.getNickName()));
@@ -237,7 +245,7 @@ class AuthControllerTest {
         authController.createUser(requestTest);
 
         //Then the user is created and added to the DB.
-        UserToPresent resUser = userController.getUserByNickname(requestTest.getNickName());
+        UserToPresent resUser = userController.getUserByNicknameToPresent(requestTest.getNickName());
         assertEquals(resUser.getNickName(), requestTest.getNickName());
 
         authController.deleteUserByNickname(requestTest.getNickName());
@@ -395,9 +403,9 @@ class AuthControllerTest {
         //Given there is a registered unverified user.
         testUser.setVerified(false);
         //When verifying we need to send user
-        UserToPresent resUser = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent resUser = userController.getUserByNicknameToPresent(testUser.getNickName());
         authController.confirmUserAccount(resUser.getId());
-        UserToPresent updatedUser = userController.getUserByNickname(testUser.getNickName());
+        UserToPresent updatedUser = userController.getUserByNicknameToPresent(testUser.getNickName());
         //Then the user is now verified
         assertEquals(true, updatedUser.isVerified());
     }
@@ -441,5 +449,4 @@ class AuthControllerTest {
         );
         assertTrue(thrown.getMessage().contains("Entity must not be null!"));
     }
-
 }

@@ -2,6 +2,7 @@ package chatApp.controller;
 
 import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.RequestActivation;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.RequestAddUser;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
@@ -167,7 +168,7 @@ public class AuthController {
      * In general the login is supposed to generate a token for the user and set his status to ONLINE.
      */
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public String logIn(@RequestBody User user) {
+    public NicknameTokenPair logIn(@RequestBody User user) {
 
         Matcher matchMail = emailPattern.matcher(user.getEmail());
         Matcher matchPassword = passwordPattern.matcher(user.getPassword());
@@ -194,8 +195,8 @@ public class AuthController {
      * @return Returns a string which consists of a successful log-out message
      */
     @RequestMapping(value = "logout", method = RequestMethod.POST)
-    public String logOut(@RequestBody User user) {
-        return authenticationService.logOut(user.getNickName());
+    public String logOut(@RequestBody NicknameTokenPair user) {
+        return authenticationService.logOut(user);
     }
 
 
@@ -208,8 +209,7 @@ public class AuthController {
      * The guest will get the Guest- prefix before his nickname and he will be shown with the status ONLINE.
      */
     @RequestMapping(value = "/guest", method = RequestMethod.POST)
-    public String createGuest(@RequestBody User guest) {
-        User tempGuest = new User.UserBuilder(guest.getNickName()).build();
+    public NicknameTokenPair createGuest(@RequestBody User guest) {
         return authenticationService.addUGuest(guest);
     }
 

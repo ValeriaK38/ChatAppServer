@@ -2,6 +2,7 @@ package chatApp.service;
 
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.User;
 import chatApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class AuthService {
      * and save the token and nickname in the session storage for later use.
      * In general the login is supposed to generate a token for the user and set his status to ONLINE.
      */
-    public String logIn(String email, String password) {
+    public NicknameTokenPair logIn(String email, String password) {
 
         User tempUser = userRepository.findByEmail(email);
 
@@ -92,29 +93,35 @@ public class AuthService {
         String token = createToken();
         userTokens.put(tempUser.getNickName(), token);
 
-        String res = tempUser.getNickName() + ":" + token;
+        NicknameTokenPair res = new NicknameTokenPair(tempUser.getNickName(),token);
+
         tempUser.setToken(token);
         tempUser.switchUserStatus(UserStatus.ONLINE);
         tempUser.setLast_Loggedin(Timestamp.from(Instant.now()));
         userRepository.save(tempUser);
+
         return res;
     }
 
     /**
      * Does the log out process for a logged-in user in our database(When clicking the log out button).
      *
-     * @param nickName - The nickname of the user we want to log out.
+     * @param user - A pair that represents the nickName and token of a user.
      * @return Returns a string which consists of a successful log-out message
      */
-    public String logOut(String nickName) {
+    public String logOut(NicknameTokenPair user) {
 
         //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
-        if (nickName.startsWith("Guest")) {
-            nickName = nickName.replace("Guest-", "");
+        if (user.getNickName().startsWith("Guest")) {
+            user.setNickName(user.getNickName().replace("Guest-", ""));
         }
 
-        User tempUser = userRepository.findByNickName(nickName);
-        userTokens.remove(nickName);
+        if(!userTokens.get(user.getNickName()).equals(user.getToken())){
+            throw new IllegalArgumentException("Invalid token was sent");
+        }
+
+        User tempUser = userRepository.findByNickName(user.getNickName());
+        userTokens.remove(user.getNickName());
 
         if (tempUser.getUserStatus() == UserStatus.OFFLINE) {
             throw new IllegalStateException("The user is already offline! cant log out again");
@@ -138,7 +145,7 @@ public class AuthService {
      * and save the token and nickname in the session storage for later use.
      * The guest will get the Guest- prefix before his nickname and he will be shown with the status ONLINE.
      */
-    public String addUGuest(User guest) {
+    public NicknameTokenPair addUGuest(User guest) {
         if (userRepository.findByNickName(guest.getNickName()) != null) {
             throw new IllegalArgumentException(String.format("Nickname %s already exists in the user table", guest.getNickName()));
         }
@@ -151,13 +158,15 @@ public class AuthService {
         userTokens.put(guest.getNickName(), token);
 
 
-        String res = "Guest-" + guest.getNickName() + ":" + token;
+        String guestNickName = "Guest-" + guest.getNickName();
         guest.setToken(token);
         guest.switchUserStatus(UserStatus.ONLINE);
         guest.setUserType(UserType.GUEST);
         guest.setMuted(false);
         guest.setLast_Loggedin(Timestamp.from(Instant.now()));
         userRepository.save(guest);
+
+        NicknameTokenPair res = new NicknameTokenPair(guestNickName, token);
         return res;
     }
 

@@ -2,6 +2,7 @@ package chatApp.service;
 
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
+import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
 import chatApp.controller.ChatController;
@@ -15,6 +16,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static chatApp.service.AuthService.userTokens;
 
 @Service
 public class UserService {
@@ -37,7 +40,7 @@ public class UserService {
 
         List<UserToPresent> userToPresent = new ArrayList<>();
 
-        for (User user:users) {
+        for (User user : users) {
             UserToPresent tempUser = new UserToPresent(user);
             userToPresent.add(tempUser);
         }
@@ -47,30 +50,42 @@ public class UserService {
 
     /**
      * @param nickName - The nickname of the user we wish to retrieve.
-     * @return the user we wanted to get from the DB
+     * @return the user we wanted to get from the DB but as a UserToPresent Class
      */
-    public UserToPresent getUserByNickname(String nickName) {
+    public UserToPresent getUserToPresentByNickname(String nickName) {
         User tempUser = userRepository.findByNickName(nickName);
         UserToPresent userToPresent = null;
-        if(tempUser != null){
-             userToPresent = new UserToPresent(tempUser);
+        if (tempUser != null) {
+            userToPresent = new UserToPresent(tempUser);
         }
         return userToPresent;
+    }
+
+    /**
+     * @param nickName - The nickname of the user we wish to retrieve.
+     * @return the user we wanted to get from the DB
+     */
+    public User getUserByNickname(String nickName) {
+        return userRepository.findByNickName(nickName);
     }
 
     /**
      * The function mutes or unmutes a user , Only an admin can mute a user , the muted/unmuted user must not be
      * an admin himself.
      *
-     * @param adminNickName - The nickname of the admin that wishes to mute someone.
+     * @param admin         - A NicknameTokenPair of the admin who clicked the button.
      * @param userNickName- The nickname of the user the admin wishes to mute.
      * @param status        - Can be either "mute" or "unmute" to know which action to take.
      */
-    public void muteUnmute(String adminNickName, String userNickName, String status) {
+    public void muteUnmute(NicknameTokenPair admin, String userNickName, String status) {
         User tempUser = userRepository.findByNickName(userNickName);
-        User tempAdmin = userRepository.findByNickName(adminNickName);
+        User tempAdmin = userRepository.findByNickName(admin.getNickName());
 
-        if (adminNickName == userNickName) {
+        if (!userTokens.get(admin.getNickName()).equals(tempAdmin.getToken())) {
+            throw new IllegalArgumentException("The wrong token was sent!");
+        }
+
+        if (admin.getNickName() == userNickName) {
             throw new IllegalArgumentException("You cant mute/unmute yourself!");
         }
         if (tempUser.getUserType() == UserType.ADMIN) {
@@ -91,11 +106,16 @@ public class UserService {
     /**
      * Switches the status of a user from online to away or from away to online
      *
-     * @param nickName - The nickname of the user we wish to switch his status
+     * @param user - A NicknameTokenPair of the user we wish to switch his status
      * @return a message of the successful switch.
      */
-    public UserStatus awayOnline(String nickName) {
-        User tempUser = userRepository.findByNickName(nickName);
+    public UserStatus awayOnline(NicknameTokenPair user) {
+        User tempUser = userRepository.findByNickName(user.getNickName());
+
+        if (!userTokens.get(user.getNickName()).equals(tempUser.getToken())) {
+            throw new IllegalArgumentException("The wrong token was sent!");
+        }
+
         UserStatus nowStatus = tempUser.getUserStatus();
         if (nowStatus == UserStatus.ONLINE) {
             tempUser.setUserStatus(UserStatus.AWAY);
@@ -142,9 +162,10 @@ public class UserService {
         List<User> users = getAllOnlineUsers();
 
         for (User tempUser : users) {
-            if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) / (60 * 1000) >= 1) {
+            NicknameTokenPair tempPair = new NicknameTokenPair(tempUser.getNickName(), tempUser.getToken());
+            if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) > 60000) {
                 if (tempUser.getUserStatus() != UserStatus.OFFLINE) {
-                    authService.logOut(tempUser.getNickName());
+                    authService.logOut(tempPair);
                 }
             }
         }
