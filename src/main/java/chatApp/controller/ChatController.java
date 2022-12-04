@@ -3,8 +3,12 @@ package chatApp.controller;
 import chatApp.Entities.ChatMessage;
 import chatApp.Entities.RequestMessage;
 import chatApp.Entities.SystemMessage;
+import chatApp.Entities.User;
+import chatApp.service.AuthService;
 import chatApp.service.ChatService;
+import chatApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,11 @@ import java.util.List;
 public class ChatController {
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    @Lazy
+    private UserService userService;
 
     /**
      * A method that sends a message to the chat room.
@@ -63,9 +72,15 @@ public class ChatController {
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     public String createMessage(@RequestBody RequestMessage requestMessage) {
-        return chatService.addMessage(requestMessage).toString();
-    }
 
+        User sender = userService.getUserByToken(requestMessage.getToken());
+
+        if (authService.authenticateUser(sender.getNickName(), sender.getToken())) {
+            return chatService.addMessage(requestMessage, sender).toString();
+        } else {
+            throw new IllegalArgumentException("Invalid token was sent");
+        }
+    }
 
     /**
      * @return a list of all the messages in the DB

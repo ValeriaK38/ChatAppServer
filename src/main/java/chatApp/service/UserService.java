@@ -81,10 +81,6 @@ public class UserService {
         User tempUser = userRepository.findByNickName(userNickName);
         User tempAdmin = userRepository.findByNickName(admin.getNickName());
 
-        if (!userTokens.get(admin.getNickName()).equals(tempAdmin.getToken())) {
-            throw new IllegalArgumentException("The wrong token was sent!");
-        }
-
         if (admin.getNickName() == userNickName) {
             throw new IllegalArgumentException("You cant mute/unmute yourself!");
         }
@@ -111,10 +107,6 @@ public class UserService {
      */
     public UserStatus awayOnline(NicknameTokenPair user) {
         User tempUser = userRepository.findByNickName(user.getNickName());
-
-        if (!userTokens.get(user.getNickName()).equals(tempUser.getToken())) {
-            throw new IllegalArgumentException("The wrong token was sent!");
-        }
 
         UserStatus nowStatus = tempUser.getUserStatus();
         if (nowStatus == UserStatus.ONLINE) {
@@ -178,5 +170,9 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users.stream().filter(user -> user.getUserStatus() == UserStatus.ONLINE ||
                 user.getUserStatus() == UserStatus.AWAY).collect(Collectors.toList());
+    }
+
+    public User getUserByToken(String token) {
+        return userRepository.findByToken(token);
     }
 }
