@@ -169,19 +169,7 @@ public class AuthController {
      */
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public NicknameTokenPair logIn(@RequestBody User user) {
-
-        Matcher matchMail = emailPattern.matcher(user.getEmail());
-        Matcher matchPassword = passwordPattern.matcher(user.getPassword());
-
-        boolean emailMatchFound = matchMail.matches();
-        boolean passwordMatchFound = matchPassword.matches();
-
-        if (!emailMatchFound) {
-            throw new IllegalArgumentException("invalid email, use pattern: example@gmail.com");
-        }
-        if (!passwordMatchFound) {
-            throw new IllegalArgumentException("invalid password: need to be at lest 8 characters long, and contain numbers and letters");
-        }
+        validateInputUser(user);
         if (authenticationService.checkIfEmailExists(user.getEmail())) {
             return authenticationService.logIn(user.getEmail(), user.getPassword());
         }
@@ -210,6 +198,7 @@ public class AuthController {
      */
     @RequestMapping(value = "/guest", method = RequestMethod.POST)
     public NicknameTokenPair createGuest(@RequestBody User guest) {
+        validateInputUser(guest);
         return authenticationService.addUGuest(guest);
     }
 
