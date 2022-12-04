@@ -4,7 +4,6 @@ import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
 import com.sun.istack.NotNull;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -246,16 +245,6 @@ public class User {
                 "\nPrivacy status: " + privacyStatus +
                 "\nIs verified: " + isVerified;
     }
-
-    public static User createNewUser(@RequestBody RequestAddUser request)
-    {
-
-        User user = new User.UserBuilder(request.getEmail(), request.getPassword(),
-                request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName()).description(request.getDescription())
-                .profilePhoto(null).build();
-        return user;
-    }
-
 
     public static class UserBuilder {
 
