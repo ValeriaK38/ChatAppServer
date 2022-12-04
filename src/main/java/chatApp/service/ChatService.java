@@ -25,14 +25,10 @@ public class ChatService {
      * Adds a message to the database - content paired with sender
      *
      * @param requestMessage - the message's data with the token of the sender.
+     * @param sender -  The user who sent the message
      * @return a saved message with it's generated id
      */
-    public ChatMessage addMessage(RequestMessage requestMessage) {
-        User sender = userRepository.findByToken(requestMessage.getToken());
-
-        if(!userTokens.get(sender.getNickName()).equals(requestMessage.getToken())){
-            throw new IllegalArgumentException("The wrong token was sent!");
-        }
+    public ChatMessage addMessage(RequestMessage requestMessage, User sender) {
 
         if(sender == null){
             throw new IllegalArgumentException("Wrong token was sent from client or no such user");
@@ -43,7 +39,6 @@ public class ChatService {
         }
 
         ChatMessage chatMessage = new ChatMessage(sender.getNickName(), requestMessage.getContent());
-
         return messageRepository.save(chatMessage);
     }
 

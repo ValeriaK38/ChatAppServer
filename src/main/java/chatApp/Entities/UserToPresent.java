@@ -3,6 +3,7 @@ package chatApp.Entities;
 import chatApp.Entities.Enums.PrivacyStatus;
 import chatApp.Entities.Enums.UserStatus;
 import chatApp.Entities.Enums.UserType;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Arrays;

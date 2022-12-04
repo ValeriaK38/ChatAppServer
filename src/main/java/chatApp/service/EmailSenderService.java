@@ -15,16 +15,17 @@ public class EmailSenderService {
 
     /**
      * Created custom url based on user's id and sends verification email with link to activate the account
+     *
      * @param user - user's email, id
-     * @param url              - activation link url
+     * @param url  - activation link url
      */
-    public void sendVerificationEmail(User user , String url) {
+    public void sendVerificationEmail(User user, String url) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom("lera38lera@gmail.com");
         simpleMailMessage.setTo(user.getEmail());
         simpleMailMessage.setSubject("Verification email for chat-app");
         String sid = Long.toString(user.getId());
-        String html = "<html><body><p>  Verify email on the link below </p>" + "<a href= '" + url + ".html?id=" + sid +"?token="+user.getVerificationCode()+ "'>Verification page</a></body></html>";
+        String html = "<html><body><p>  Verify email on the link below </p>" + "<a href= '" + url + ".html?id=" + sid + "?token=" + user.getVerificationCode() + "'>Verification page</a></body></html>";
         simpleMailMessage.setText(html);
         this.mailSender.send(simpleMailMessage);
     }

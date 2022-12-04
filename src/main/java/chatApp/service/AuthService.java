@@ -47,14 +47,13 @@ public class AuthService {
      * @param id - the user's id
      * @throws IllegalArgumentException when the provided id doesn't exist
      */
-    public void validateUserAccount(Long id, String verificationCode){
+    public void validateUserAccount(Long id, String verificationCode) {
         User user = userRepository.findById(id).get();
         if (user != null) {
             if (user.getVerificationCode().equals(verificationCode)) {
                 user.setVerified(true);
                 userRepository.save(user);
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("Wrong verification code - not matching the user id");
             }
         } else {
@@ -93,7 +92,7 @@ public class AuthService {
         String token = createToken();
         userTokens.put(tempUser.getNickName(), token);
 
-        NicknameTokenPair res = new NicknameTokenPair(tempUser.getNickName(),token);
+        NicknameTokenPair res = new NicknameTokenPair(tempUser.getNickName(), token);
 
         tempUser.setToken(token);
         tempUser.switchUserStatus(UserStatus.ONLINE);
@@ -114,10 +113,6 @@ public class AuthService {
         //Changes the nickname to be just the nickname without the prefix for correct usage in the repo.
         if (user.getNickName().startsWith("Guest")) {
             user.setNickName(user.getNickName().replace("Guest-", ""));
-        }
-
-        if(!userTokens.get(user.getNickName()).equals(user.getToken())){
-            throw new IllegalArgumentException("Invalid token was sent");
         }
 
         User tempUser = userRepository.findByNickName(user.getNickName());
@@ -197,5 +192,22 @@ public class AuthService {
     public void deleteUserByNickname(String nickName) {
         User user = userRepository.findByNickName(nickName);
         userRepository.delete(user);
+    }
+
+    /**
+     * This function checks if the token sent from the client is valid and exists on the server side
+     *
+     * @param nickName - A nickname of the user we want to check the token for
+     * @param token    - The token of the user we want to check against our server.
+     */
+    public static boolean authenticateUser(String nickName, String token) {
+        if (nickName.startsWith("Guest")) {
+            nickName = nickName.replace("Guest-", "");
+        }
+        if (!userTokens.get(nickName).equals(token)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

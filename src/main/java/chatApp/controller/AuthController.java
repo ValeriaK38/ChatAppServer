@@ -184,7 +184,12 @@ public class AuthController {
      */
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     public String logOut(@RequestBody NicknameTokenPair user) {
-        return authenticationService.logOut(user);
+
+        if (authenticationService.authenticateUser(user.getNickName(), user.getToken())) {
+            return authenticationService.logOut(user);
+        } else {
+            throw new IllegalArgumentException("Invalid token was sent");
+        }
     }
 
 

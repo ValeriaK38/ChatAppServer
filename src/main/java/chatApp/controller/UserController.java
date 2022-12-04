@@ -6,6 +6,7 @@ import chatApp.Entities.Enums.UserType;
 import chatApp.Entities.NicknameTokenPair;
 import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
+import chatApp.service.AuthService;
 import chatApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private AuthService authService;
 
     /**
      * @return the list of all the users in the database.
@@ -39,8 +42,12 @@ public class UserController {
      */
     @RequestMapping(value = "/muteUnmute", method = RequestMethod.PATCH)
     public String muteUnmute(@RequestBody NicknameTokenPair admin, @RequestParam String userNickName, @RequestParam String status) {
-        userService.muteUnmute(admin, userNickName, status);
-        return String.format("%s is now %sd!", userNickName, status);
+        if (authService.authenticateUser(admin.getNickName(), admin.getToken())) {
+            userService.muteUnmute(admin, userNickName, status);
+            return String.format("%s is now %sd!", userNickName, status);
+        } else {
+            throw new IllegalArgumentException("Invalid token was sent");
+        }
     }
 
     /**
@@ -51,9 +58,12 @@ public class UserController {
      */
     @RequestMapping(value = "/awayOnline", method = RequestMethod.PATCH)
     public String awayOnline(@RequestBody NicknameTokenPair user) {
-
-        UserStatus status = userService.awayOnline(user);
-        return String.format("%s changed to %s!", user.getNickName(), status.toString());
+        if (authService.authenticateUser(user.getNickName(), user.getToken())) {
+            UserStatus status = userService.awayOnline(user);
+            return String.format("%s changed to %s!", user.getNickName(), status.toString());
+        } else {
+            throw new IllegalArgumentException("Invalid token was sent");
+        }
     }
 
     /**
