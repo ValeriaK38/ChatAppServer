@@ -47,7 +47,7 @@ public class AuthService {
      * @param id - the user's id
      * @throws IllegalArgumentException when the provided id doesn't exist
      */
-    public void validateUserAccount(Long id, String verificationCode) throws IllegalArgumentException {
+    public void validateUserAccount(Long id, String verificationCode){
         User user = userRepository.findById(id).get();
         if (user != null) {
             if (user.getVerificationCode().equals(verificationCode)) {
