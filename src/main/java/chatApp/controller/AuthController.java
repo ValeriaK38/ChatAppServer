@@ -72,7 +72,8 @@ public class AuthController {
                 privacyStatus = PrivacyStatus.PRIVATE;
             }
 
-            User user = new User.UserBuilder(request.getEmail(), request.getPassword(), request.getNickName()).firstName(request.getFirstName()).lastName(request.getLastName()).description(request.getDescription()).profilePhoto(null).dateOfBirth(dateTime).privacyStatus(privacyStatus).build();
+            User user = User.createNewUser(request);
+            user.setDateOfBirth(dateTime);
             validateInputUser(user);
             User userRes = authenticationService.addUser(user);
             emailSenderService.sendVerificationEmail(user, request.getUrl());
