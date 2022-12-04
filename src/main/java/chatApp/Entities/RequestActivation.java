@@ -6,6 +6,9 @@ public class RequestActivation {
     private String id;
     private String activationCode;
 
+    public RequestActivation() {
+    }
+
     public RequestActivation(String id, String activationCode) {
         this.id = id;
         this.activationCode = activationCode;
