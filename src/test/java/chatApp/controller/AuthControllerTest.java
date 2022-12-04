@@ -2,7 +2,6 @@ package chatApp.controller;
 
 import chatApp.Entities.*;
 import chatApp.Entities.Enums.UserStatus;
-import chatApp.repository.UserRepository;
 import chatApp.service.AuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
