@@ -48,7 +48,6 @@ public class AuthController {
 
     /**
      * The controller creates user based on input from the registration client page
-     *
      * @param request - user's data to add to the DB and url : sends verification email with the url
      *                catches SQLDataException when the provided user already exists by unique fields
      * @return server POST response.
