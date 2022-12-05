@@ -78,14 +78,6 @@ public class UserController {
     }
 
     /**
-     * Goes over the list of users in the DB and logs off users who did not pass a keepalive check in the past minute
-     */
-    @RequestMapping(value = "/checkOfflineUsers", method = RequestMethod.GET)
-    public void checkOfflineUsers() {
-        userService.checkOfflineUsers();
-    }
-
-    /**
      * Saves one user in the DB
      *
      * @param user - The user we wish to save in the DB

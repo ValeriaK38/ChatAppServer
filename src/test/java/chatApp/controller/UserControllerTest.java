@@ -385,7 +385,7 @@ class UserControllerTest {
         userController.saveUserInDB(unmutedUser);
 
         //When we check if there are people who left the page without pressing the logout button
-        userController.checkOfflineUsers();
+        authController.checkOfflineUsers();
 
         UserToPresent testOnline = userController.getUserByNicknameToPresent(mutedUser.getNickName());
         UserToPresent testOffline = userController.getUserByNicknameToPresent(unmutedUser.getNickName());

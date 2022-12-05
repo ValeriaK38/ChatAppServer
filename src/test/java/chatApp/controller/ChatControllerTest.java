@@ -121,20 +121,4 @@ class ChatControllerTest {
         System.out.println("The first message from the first chunk is:");
         System.out.println(messageList.get(0));
     }
-
-
-    @Test
-    void getLatest_Successfully() {
-
-        //Given there are messages in the database
-
-        //When i try to get the list of the x latest messages
-        messageList = chatController.getLatestChunks(1);
-
-        //Then I have a list of the lastest messages
-        assertFalse(messageList.isEmpty());
-
-        System.out.println("The first message from the first chunk is:");
-        System.out.println(messageList.get(0));
-    }
 }

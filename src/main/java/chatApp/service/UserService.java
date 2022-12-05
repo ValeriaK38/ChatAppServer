@@ -23,8 +23,6 @@ import static chatApp.service.AuthService.userTokens;
 public class UserService {
     private final UserRepository userRepository;
     @Autowired
-    AuthService authService;
-    @Autowired
     ChatController chatController;
 
     public UserService(UserRepository userRepository) {
@@ -142,24 +140,6 @@ public class UserService {
         if (userDB != null) {
             userDB.setLast_Loggedin(now);
             userRepository.save(userDB);
-        }
-    }
-
-    /**
-     * Goes over the list of users in the DB and logs off users who did not pass a keepalive check in the past minute
-     */
-    public void checkOfflineUsers() {
-        Timestamp now = Timestamp.from(Instant.now());
-
-        List<User> users = getAllOnlineUsers();
-
-        for (User tempUser : users) {
-            NicknameTokenPair tempPair = new NicknameTokenPair(tempUser.getNickName(), tempUser.getToken());
-            if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) > 60000) {
-                if (tempUser.getUserStatus() != UserStatus.OFFLINE) {
-                    authService.logOut(tempPair);
-                }
-            }
         }
     }
 

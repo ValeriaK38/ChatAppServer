@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 
 import static chatApp.utilities.Utilities.createRandomString;
 
@@ -208,6 +209,22 @@ public class AuthService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    /**
+     * Goes over the list of users in the DB and logs off users who did not pass a keepalive check in the past minute
+     */
+    public void checkOfflineUsers(  List<User> users) {
+        Timestamp now = Timestamp.from(Instant.now());
+
+        for (User tempUser : users) {
+            NicknameTokenPair tempPair = new NicknameTokenPair(tempUser.getNickName(), tempUser.getToken());
+            if ((now.getTime() - tempUser.getLast_Loggedin().getTime()) > 30000) {
+                if (tempUser.getUserStatus() != UserStatus.OFFLINE) {
+                    logOut(tempPair);
+                }
+            }
         }
     }
 }
