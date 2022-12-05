@@ -8,12 +8,15 @@ import chatApp.Entities.User;
 import chatApp.Entities.UserToPresent;
 import chatApp.service.AuthService;
 import chatApp.service.EmailSenderService;
+import chatApp.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +28,9 @@ public class AuthController {
     private AuthService authenticationService;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    @Lazy
+    private UserService userService;
     private static final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z]).{8,20}$");
     private static final Pattern nicknamePattern = Pattern.compile("^[A-Za-z][A-Za-z0-9_]{4,20}$");
     private static final Pattern stringNamePattern = Pattern.compile("[A-Za-z]{2,20}");
@@ -214,5 +220,14 @@ public class AuthController {
      */
     public void deleteUserByNickname(String nickName) {
         authenticationService.deleteUserByNickname(nickName);
+    }
+
+    /**
+     * Goes over the list of users in the DB and logs off users who did not pass a keepalive check in the past minute
+     */
+    @RequestMapping(value = "/checkOfflineUsers", method = RequestMethod.GET)
+    public void checkOfflineUsers() {
+        List<User> users = userService.getAllOnlineUsers();
+        authenticationService.checkOfflineUsers(users);
     }
 }
